@@ -112,3 +112,25 @@ plt.legend()
 
 plt.subplots_adjust(hspace=0.35)
 plt.show()
+
+#trim to 10 second clip
+
+cliplength = int(10*fs)
+print("Clip Length: ", cliplength)
+clip = y[cliplength:cliplength*2]
+
+plt.figure(1)
+plt.title('10 second Signal Wave...')
+plt.plot(clip)
+plt.show()
+
+#downsample to length ~300
+ratio300 = int(1/(300/cliplength))
+print("ratio300: ", ratio300)
+clipdownsamp = clip[::ratio300]
+print("Re-downsampled length: ", len(clipdownsamp))
+
+plt.figure(1)
+plt.title('~300 sample 10 second Signal Wave...')
+plt.plot(clipdownsamp)
+plt.show()
