@@ -1,0 +1,31 @@
+<html>
+<head>
+  {% if title %}
+  <title>{{ title }}</title>
+  {% else %}
+  <title>SET THE FUCKING TITLE</title>
+  {% endif %}
+</head>
+<body>
+<h1>Change Music</h1>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+<form action="" method="post" novalidate>
+    <p>
+        {{ form.url.label }}<br>
+        {{ form.url(size=32) }}
+        {% for error in form.url.errors %}
+<span style="color: red;">[{{ error }}]</span>
+{% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+</form>
+</body>
+</html>
