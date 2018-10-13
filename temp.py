@@ -25,7 +25,11 @@ import matplotlib.pyplot as plt
 #sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/america.mp3") #120
 #sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/god.mp3") #77
 #sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/hotel.mp3") #147
-sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/brightside.mp3") #148
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/kiki.mp3") #91
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/sail.mp3") #119
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/thrift.mp3") #95
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/oneday.mp3") #145
+sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/allday.mp3") #139?
 
 sound.export("/home/osboxes/Sound-Repo-Thing/file.wav", format="wav")
 
@@ -39,7 +43,7 @@ upper = 0
 speed = int(input("Enter relative speed slow = 1, medium = 2, fast = 3"))
 if (speed == 1):
 	lower = 1
-	upper = 3
+	upper = 2
 if (speed == 2):
 	lower = 1.5
 	upper = 2.5
@@ -136,7 +140,7 @@ plt.legend()
 plt.subplots_adjust(hspace=0.35)
 #plt.show()
 
-window = int(len(y)/fsamp/4)
+window = int(len(y)/fsamp/5)
 #window = 30
 m = 0
 total = [0]*(int(len(y)/fsamp/window))
@@ -152,7 +156,7 @@ for m in range(int(len(y)/fsamp/window)):
 	plt.ylabel('PSD [V**2/Hz]')
 	#plt.show()
 
-	print(f)
+	#print(f)
 	i = 0
 	maxfreq = 0
 	maxi = 0
@@ -166,6 +170,8 @@ for m in range(int(len(y)/fsamp/window)):
 	bpm = f[maxi]*60
 	print("periodogram bpm: ", bpm, "Time: ", window*m, " to ", window*(m+1))
 	total[m] = bpm
+total.remove(min(total))
+total.remove(max(total))
 print(np.average(total))
 print(np.std(total))
 	
