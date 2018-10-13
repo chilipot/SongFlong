@@ -13,7 +13,7 @@ def combineAV(audioPath):
     print(pathSplit)
     name = pathSplit[-1]
     print(name)
-    final.write_videofile(downloadPath + r'\video' + name, threads=4)
+    final.write_videofile(downloadPath + r'\video' + name, threads=8, preset='ultrafast')
 
 def createVideoFiles(files):
     print(files)

@@ -42,7 +42,7 @@ class Video:
 
     def filesDownloaded(self, stream, file_handle):
         print(stream)
-        print(file_handle.name)
+        # print(file_handle.name)
         if (stream.mime_type == 'video/mp4'):
             files['video'] = file_handle.name
         else:
@@ -63,7 +63,7 @@ def run(urls):
     streams = []
     try:
         streams.append(Video(urls[0]).getVideoStream())
-        for link in urls:
+        for link in urls[1:]:
             yt = Video(link)
             av = yt.getAudioStream()
             if av is not None:
