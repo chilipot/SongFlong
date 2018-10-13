@@ -22,7 +22,6 @@ def getOrderedBPMMatches(bpm, seedId=""):
     r.sort(key=lambda item : (abs(bpm - int(item['BPM'])), 100 - int(item['Popularity'])))
     #print(json.dumps(r[0:2]))
     return r
-
 '''
 
 class Song(cje.ComplexJSONSerializable):
@@ -63,5 +62,16 @@ def getSongsByBPM(targetBPM, pageNum=1):
 
     return json.loads(json.dumps(songs, cls=cje.ComplexEncoder))
 
+def findMatches(seed, bpm):
+    if seed is not None:
+        print(seed)
+        seedId = getSeedId(seed)
+        matches = getOrderedBPMMatches(bpm, seedId)[0:5]
+    else:
+        matches = getOrderedBPMMatches(bpm)[0:5]
+
+    return list(map(lambda match: match['SearchName'], matches))
+
 if __name__ == '__main__':
-    print(getSongsByBPM(120))
+    print(findMatches("avicii the nights", 126))
+    print(findMatches(None, 126))
