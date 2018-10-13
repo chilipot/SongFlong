@@ -1,4 +1,4 @@
-<html>
+  <html>
 <head>
   {% if title %}
   <title>{{ title }}</title>
@@ -17,7 +17,8 @@
 </ul>
 {% endif %}
 {% endwith %}
-<form action="" method="post" novalidate>
+<form action="" method="post">
+  {{ form.csrf_token }}
     <p>
         {{ form.url.label }}<br>
         {{ form.url(size=32) }}

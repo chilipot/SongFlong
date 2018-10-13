@@ -14,6 +14,10 @@ link2 = 'https://www.youtube.com/watch?v=VYOjWnS4cMY'
 links = ['https://www.youtube.com/watch?v=fWNaR-rxAic',
 'https://www.youtube.com/watch?v=VYOjWnS4cMY']
 
+files = {
+    'video': None,
+    'audio': []
+}
 
 class Video:
     def __init__(self, url):
@@ -39,6 +43,11 @@ class Video:
     def filesDownloaded(self, stream, file_handle):
         print(stream)
         print(file_handle.name)
+        if (stream.mime_type == 'video/mp4'):
+            files['video'] = file_handle.name
+        else:
+            files['audio'].append(file_handle.name)
+        # files.append(file_handle)
 
     def progressBar(self, stream, chunk,file_handle, bytes_remaining):
         size = stream.filesize
@@ -57,17 +66,20 @@ def run(urls):
         for link in urls:
             yt = Video(link)
             av = yt.getAudioStream()
-            streams.append(av)
+            if av is not None:
+                streams.append(av)
     except URLError as e:
         print("Connection Error: Check Internet Connection or YouTube Link")
     print(streams)
-    pool = ThreadPool(4)
+    pool = ThreadPool(6)
     results = pool.map(downloadStreams, streams)
     pool.close()
     pool.join()
+    return(files)
 
 # downloadVideo(link, link2) 314s
 #mulitple(links) #174
 
 if __name__ == '__main__':
-    run(links) #118
+    run(['https://www.youtube.com/watch?v=_ovdm2yX4MA']) #118
+    print(files)
