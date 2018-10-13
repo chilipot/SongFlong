@@ -1,7 +1,10 @@
 import requests
 import json
 import urllib
+from bs4 import BeautifulSoup, NavigableString
+import complex_json_encoder as cje
 
+'''
 def getSeedId(query):
     encodedQueryString = urllib.parse.urlencode({'query' : query, 'queryType': 'track'})
     url = "https://tunebat.com/Advanced/SeedQuery?" + encodedQueryString
@@ -20,9 +23,45 @@ def getOrderedBPMMatches(bpm, seedId=""):
     #print(json.dumps(r[0:2]))
     return r
 
-    
+'''
+
+class Song(cje.ComplexJSONSerializable):
+    def __init__(self, title, artist, bpm, relPopularity):
+        self.title = title
+        self.artist = artist
+        self.bpm = bpm
+        self.relPopularity = relPopularity
+
+
+def getSongsByBPM(targetBPM, pageNum=1):
+    url = "https://jog.fm/popular-workout-songs?bpm=" + str(targetBPM) + "&page=" + str(pageNum)
+
+    page = requests.get(url).content
+
+    soup = BeautifulSoup(page, 'lxml')
+
+    entries =  soup.find_all(class_="song list-item")
+
+    songs = []
+
+    for i, entry in enumerate(entries):
+        titleParent = entry.findChild("div", class_="title")
+        artistParent = entry.findChild("div", class_="top")
+        bpmParent = entry.findChild("div", class_="side-box fixed")
+        bpmParent = bpmParent.findChild("div", class_="middle") if bpmParent is not None else bpmParent
+
+        if (titleParent is not None and artistParent is not None and bpmParent is not None):
+            title = titleParent.a.string
+            artist = artistParent.a.string
+            bpm = bpmParent.a.string
+            
+            songs += [Song(title, artist, int(bpm), int(i))]
+        
+        #print(title)
+
+    songs.sort(key=lambda song : (abs(targetBPM - song.bpm), song.relPopularity))
+
+    return json.loads(json.dumps(songs, cls=cje.ComplexEncoder))
+
 if __name__ == '__main__':
-    seedId = getSeedId("avicii the nights")
-    stuff = getOrderedBPMMatches(126, "")[0:5]
-    print(stuff)
-    
+    print(getSongsByBPM(120))
