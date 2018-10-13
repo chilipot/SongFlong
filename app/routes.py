@@ -10,8 +10,7 @@ from contructVideo import createVideoFiles
 def processSearch(givenLink):
     flash('Converting video')
     print(givenLink.data)
-    keywords = YouTube(givenLink.data).title
-    matches = findMatches(keywords, 126)
+    matches = findMatches(160)[0:5]
     print(matches)
     matchlinks = [givenLink.data]
     matchlinks.extend(search(matches))
