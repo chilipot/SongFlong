@@ -8,13 +8,11 @@ from download import run as downloadVideos
 from contructVideo import createVideoFiles
 from video import VideoData
 
-results = [None] * 6
-matches = [""] * 5
-curVideoData = []
+curVideoData = []*5
 
 
 def processSearch(givenLink):
-    global curVideoData, results
+    global curVideoData
     keywords = YouTube(givenLink).title
     bpm = getTrackTuneBatBPM(keywords)
     matches = findMatches(bpm)[:5]
@@ -27,7 +25,6 @@ def processSearch(givenLink):
     print(curVideoData)
     print(curVideoData[0])
     print(curVideoData[0].final)
-    results = list(map(lambda data: url_for('static', filename=data.final), curVideoData[1:]))
 
 
 
@@ -40,6 +37,9 @@ def index():
     if form.validate_on_submit():
         processSearch(form.url.data)
         return redirect(url_for('index'))
-    print(results)
-    print(matches)
-    return render_template('theonlyhtmlfileweneed.html', title='Song Flong', form=form, titles=list(map(lambda data: data.title, curVideoData[1:])), video=results)
+    print(curVideoData)
+    if curVideoData:
+        return render_template('theonlyhtmlfileweneed.html', title='Song Flong', form=form, videoData=curVideoData[1:])
+    else:
+        temp = [VideoData(None, title="placeholder", final='static/demo/video1.mp4')]*6
+        return render_template('theonlyhtmlfileweneed.html', title='Song Flong', form=form, videoData=temp)

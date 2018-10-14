@@ -14,7 +14,7 @@ def combineAV(data):
     print(pathSplit)
     name = pathSplit[-1]
     print(name)
-    data.final = 'output/video' + name
+    data.final = 'static/output/video' + name
     final.write_videofile(downloadPath + r'\video' + name, threads=8, preset='ultrafast')
     print(data.final)
     return 'video' + name
