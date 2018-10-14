@@ -13,7 +13,7 @@ def combineAV(audioPath):
     print(pathSplit)
     name = pathSplit[-1]
     print(name)
-    final.write_videofile(downloadPath + r'\video' + name, threads=8, preset='ultrafast')
+    return final.write_videofile(downloadPath + r'\video' + name, threads=8, preset='ultrafast')
 
 def createVideoFiles(files):
     print(files)
@@ -25,6 +25,7 @@ def createVideoFiles(files):
 
 
     print("done")
+    return results
 
 if __name__ == '__main__':
     createVideoFiles({'video': 'C:\\Users\\dangu\\OneDrive\\Computer Files\\Documents\\GitHub\\Sound-Repo-Thing\\tmp\\videoAvicii - Levelsmp4.mp4', 'audio': 'C:\\Users\\dangu\\OneDrive\\Computer Files\\Documents\\GitHub\\Sound-Repo-Thing\\tmp\\audioMike Williams - Give It Up (Audio)mp4.mp4'})
