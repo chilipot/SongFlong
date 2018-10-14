@@ -15,21 +15,18 @@ import wave
 import sys
 
 #filter imports
-import numpy as np
 from scipy.signal import butter, lfilter, freqz
-import matplotlib.pyplot as plt
 
-#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/Avicii.mp3") #126
-#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/redhot.mp3") #96
-#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/scorpin.mp3") #126
-#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/america.mp3") #120
-#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/god.mp3") #77
-#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/hotel.mp3") #147
-#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/kiki.mp3") #91
-#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/sail.mp3") #119
-#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/thrift.mp3") #95
-#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/oneday.mp3") #145
-sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/allday.mp3") #139?
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/Avicii.mp3") #126 ok
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/redhot.mp3") #96 ok
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/scorpin.mp3") #126 off
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/america.mp3") #120 +
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/god.mp3") #77 ok
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/hotel.mp3") #147 ok
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/kiki.mp3") #91 +
+sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/sail.mp3") #119 +
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/thrift.mp3") #95 +
+#sound = AudioSegment.from_mp3("/home/osboxes/Sound-Repo-Thing/oneday.mp3") #145 off
 
 sound.export("/home/osboxes/Sound-Repo-Thing/file.wav", format="wav")
 
@@ -37,31 +34,31 @@ spf = wave.open('file.wav','r')
 fsamp = spf.getframerate()
 print("Original Sample Rate: ", fsamp)
 
-
 lower = 0
 upper = 0
-speed = int(input("Enter relative speed slow = 1, medium = 2, fast = 3"))
+speed = int(input("Enter relative speed slow = 1, medium = 2, fast = 3: "))
 if (speed == 1):
-	lower = 1
-	upper = 2
+	lower = 4
+	upper = 6.5
 if (speed == 2):
-	lower = 1.5
-	upper = 2.5
+	lower = 6.5
+	upper = 8.5
 if (speed == 3):
-	lower = 2
-	upper = 3
+	lower = 7.5
+	upper = 10
+
 
 #Extract Raw Audio from Wav File
 signal = spf.readframes(-1)
 signal = np.fromstring(signal, 'Int16')
 
-print("Original Signal Length", len(signal))
+print("Original Signal Length: ", len(signal))
 
 #plot wav file
 plt.figure(1)
-plt.title('Original Signal Wave...')
+plt.title('Original Signal Wave')
 plt.plot(signal)
-#plt.show()
+plt.show()
 
 #downsample ratio
 ratio = 10
@@ -71,9 +68,9 @@ print("downsampled freq: ", fsamp)
 print("downsampled length: ", len(downsamp))
 
 plt.figure(2)
-plt.title('Downsampled Wave...')
+plt.title('Downsampled Wave')
 plt.plot(downsamp)
-#plt.show()
+plt.show()
 
 import numpy as np
 from scipy.signal import butter, lfilter, freqz
@@ -98,9 +95,9 @@ def butter_lowpass_filter(data, cutoff, fs, order=5):
 
 
 # Filter requirements.
-order = 6
+order = 8
 fs = fsamp    # sample rate, Hz
-cutoff = 180  # desired cutoff frequency of the filter, Hz
+cutoff = 18  # desired cutoff frequency of the filter, Hz
 
 # Get the filter coefficients so we can check its frequency response.
 b, a = butter_lowpass(cutoff, fs, order)
@@ -114,7 +111,7 @@ plt.axvline(cutoff, color='k')
 plt.xlim(0, 0.01*fs)
 plt.title("Lowpass Filter Frequency Response")
 plt.xlabel('Frequency [Hz]')
-plt.grid()
+#plt.grid()
 
 
 # Demonstrate the use of the filter.
@@ -138,10 +135,10 @@ plt.grid()
 plt.legend()
 
 plt.subplots_adjust(hspace=0.35)
-#plt.show()
+plt.show()
 
 window = int(len(y)/fsamp/5)
-#window = 30
+
 m = 0
 total = [0]*(int(len(y)/fsamp/window))
 
@@ -152,11 +149,13 @@ for m in range(int(len(y)/fsamp/window)):
 	plt.semilogy(f, Pxx_den)
 	plt.ylim([1e1, 1e7])
 	plt.xlim([0, 10])
+	plt.axvline(x=lower, color = 'k')
+	plt.axvline(x=upper, color = 'k')
 	plt.xlabel('frequency [Hz]')
 	plt.ylabel('PSD [V**2/Hz]')
+	plt.title('Iteration: '+ str(m))
 	#plt.show()
 
-	#print(f)
 	i = 0
 	maxfreq = 0
 	maxi = 0
@@ -165,13 +164,11 @@ for m in range(int(len(y)/fsamp/window)):
 	while(f[i]<upper):
 		if (Pxx_den[i] > Pxx_den[maxi]):
 			maxi = i
-			#print(i)
 		i+=1
-	bpm = f[maxi]*60
-	print("periodogram bpm: ", bpm, "Time: ", window*m, " to ", window*(m+1))
+	bpm = f[maxi]*15
+	print("periodogram bpm: ", bpm, "Iteration:", m)
 	total[m] = bpm
-total.remove(min(total))
-total.remove(max(total))
-print(np.average(total))
-print(np.std(total))
+
+print("Average most significant freq: ", np.average(total))
+print("Significant freq standard deviation", np.std(total))
 	

@@ -27,7 +27,7 @@ def butter_lowpass_filter(data, cutoff, fs, order=5):
 
 def processSignal(filePath, speed): #speed 1 = slow, 2 = med, 3 = fast
 	folder = os.path.dirname(filePath)
-	temp = subprocess.check_output(['ffmpeg','-loglevel','panic', '-y', '-i', filePath, '/tmp/analysis.mp3'])
+	temp = subprocess.check_output(['ffmpeg','-loglevel','panic','-y', '-i', filePath, '/tmp/analysis.mp3'])
 	sound = AudioSegment.from_mp3(folder+"/tmp/analysis.mp3")
 	sound.export(folder+'/tmp/analysis.wav', format="wav")
 
@@ -38,14 +38,14 @@ def processSignal(filePath, speed): #speed 1 = slow, 2 = med, 3 = fast
 	upper = 0
 
 	if (speed == 1):
-		lower = 1
-		upper = 2
+		lower = 4
+		upper = 6.5
 	if (speed == 2):
-		lower = 1.5
-		upper = 2.5
+		lower = 6.5
+		upper = 8.5
 	if (speed == 3):
-		lower = 2
-		upper = 3
+		lower = 7.5
+		upper = 10
 
 	#Extract Raw Audio from Wav File
 	signal = spf.readframes(-1)
@@ -90,7 +90,7 @@ def processSignal(filePath, speed): #speed 1 = slow, 2 = med, 3 = fast
 			if (Pxx_den[i] > Pxx_den[maxi]):
 				maxi = i
 			i+=1
-		bpm = f[maxi]*60
+		bpm = f[maxi]*15
 		total[m] = bpm
 	total.remove(min(total))
 	total.remove(max(total))
