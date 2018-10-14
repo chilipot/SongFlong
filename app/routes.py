@@ -2,7 +2,7 @@ from app import app
 from flask import render_template, flash, redirect, url_for
 from app.forms import VideoURL
 from pytube import YouTube
-from tunebat import findMatches
+from tunebat import findMatches, getTrackTuneBatBPM
 from youtubeSearch import findAllLinks as search
 from download import run as downloadVideos
 from contructVideo import createVideoFiles
@@ -11,7 +11,8 @@ def processSearch(givenLink):
     flash('Converting video')
     print(givenLink.data)
     keywords = YouTube(givenLink.data).title
-    matches = findMatches(keywords, 126)
+    bpm = getTrackTuneBatBPM(keywords)
+    matches = findMatches(bpm)[0:5]
     print(matches)
     matchlinks = [givenLink.data]
     matchlinks.extend(search(matches))

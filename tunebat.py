@@ -4,6 +4,18 @@ import urllib
 from bs4 import BeautifulSoup, NavigableString
 import complex_json_encoder as cje
 
+def getTrackTuneBatBPM(query):
+    encodedQueryString = urllib.parse.urlencode({'q' : query})
+    url = "https://tunebat.com/Search?" + encodedQueryString
+    r = requests.get(url).content
+    soup = BeautifulSoup(r, 'lxml')
+
+    resultElem = soup.find(class_="search-info-container")
+
+    bpm = int(resultElem.find_all(class_="row search-attribute-value")[2].string)
+
+    return bpm
+
 '''
 def getSeedId(query):
     encodedQueryString = urllib.parse.urlencode({'query' : query, 'queryType': 'track'})
@@ -68,4 +80,6 @@ def findMatches(bpm):
     return list(map(lambda match: match['title'] + " " + match['artist'], matches))
 
 if __name__ == '__main__':
-    print(findMatches(126))
+    #print(findMatches(126))
+    bpm = getTrackTuneBatBPM("All Day and all of the night")
+    print(bpm)

@@ -34,7 +34,7 @@ class Video:
 
     def resolutions(self, stream):
         s = stream.resolution
-        return (s == '720p' or s == '1080p' or s == '480p')
+        return (s == '720p' or s == '1080p' or s == '480p' or s == '360p' or s == '240p' or s == '144p')
 
     def bitrate(self, stream):
         b = stream.abr
