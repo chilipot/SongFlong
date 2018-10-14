@@ -49,6 +49,7 @@ def getSongsByBPM(targetBPM, pageNum=1):
             artist = artistParent.a.string
             bpm = bpmParent.a.string
             art = artParent.a.img['src']
+            print(art)
 
             songs += [Song(title, artist, int(bpm), int(i), art)]
 

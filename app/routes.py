@@ -13,6 +13,7 @@ curVideoData = []*5
 
 def processSearch(givenLink):
     global curVideoData
+    curVideoData = []*5
     keywords = YouTube(givenLink).title
     bpm = getTrackTuneBatBPM(keywords)
     matches = findMatches(bpm)[:5]
