@@ -9,6 +9,8 @@ from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 from urllib.error import URLError
 
+import time # Debug
+
 link = 'https://www.youtube.com/watch?v=fWNaR-rxAic'
 link2 = 'https://www.youtube.com/watch?v=VYOjWnS4cMY'
 links = ['https://www.youtube.com/watch?v=fWNaR-rxAic',
@@ -63,11 +65,20 @@ def run(urls):
     streams = []
     try:
         streams.append(Video(urls[0]).getVideoStream())
-        for link in urls[1:]:
+        start = time.time() # Debug
+        pool = ThreadPool(5)
+        def addAudioStreams(link):
             yt = Video(link)
             av = yt.getAudioStream()
             if av is not None:
                 streams.append(av)
+
+        pool.map(addAudioStreams, urls[1:])
+        pool.close()
+        pool.join()
+        end = time.time() # Debug
+        print("Time: " + str(end - start))
+
     except URLError as e:
         print("Connection Error: Check Internet Connection or YouTube Link")
     print(streams)
