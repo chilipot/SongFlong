@@ -28,4 +28,4 @@ def index():
         flash('valid input')
         processSearch(form.url)
         return redirect(url_for('index'))
-    return render_template('theonlyhtmlfileweneed.html', title='dan was here', form=form)
+    return render_template('theonlyhtmlfileweneed.html', title='Song Fling Flong', form=form)
