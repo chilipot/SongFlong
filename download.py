@@ -56,7 +56,7 @@ class Video:
         p = (float(bytes_remaining) / float(size)) * float(100)
         if (int(p) % 5 == 0):
             print('%.2f %s' % (p, self.title))
-            print(self.yt)
+            #print(self.yt)
 
 def downloadStreams(stream):
     downloadPath = os.getcwd() + r'\tmp'
@@ -66,7 +66,7 @@ def run(urls):
     streams = []
     try:
         streams.append(Video(urls[0]).getVideoStream())
-        start = time.time() # Debug
+        #start = time.time() # Debug
         pool = ThreadPool(5)
         def addAudioStreams(link):
             yt = Video(link)
@@ -77,8 +77,10 @@ def run(urls):
         pool.map(addAudioStreams, urls[1:])
         pool.close()
         pool.join()
-        end = time.time() # Debug
-        print("Time: " + str(end - start))
+        #end = time.time() # Debug
+        #print("Time: " + str(end - start))
+        #for url in urls[1:]:
+        #    addAudioStreams(url)
 
     except URLError as e:
         print("Connection Error: Check Internet Connection or YouTube Link")

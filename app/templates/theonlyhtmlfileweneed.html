@@ -3,7 +3,7 @@
   {% if title %}
   <title>{{ title }}</title>
   {% else %}
-  <title>SET THE FUCKING TITLE</title>
+  <title>Song Flong</title>
   {% endif %}
   <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='main.css') }}">
 </head>
@@ -12,7 +12,7 @@
   <div class="header">
     <div class="container jumbotron">
       <img src="https://hackumass.com/assets/img/logo.png" alt="hackumass" id="hum">
-      <h1>A NAME TO BE DECIDED</h1>
+      <h1>Song Flong</h1>
       <h3>Can a music video still work for a different song?</h3>
 
       <form action="" method="post">
@@ -43,61 +43,63 @@
   </div>
 
   <div class="content" style="clear:both">
-    <div class="videos">
+    <div class="videos container">
 
       <div class="row">
 
-        <div class="video">
+        <div class="video two-thirds column">
           <video controls>
           <source src="{{video[0]}}" type="video/mp4"></video>
         </div>
-        <div class="title">
+        <div class="title one-third column" height="document.getElementsByClassName('row')[0].offsetWidth;">
             <p>{{titles[0]}}</p>
         </div>
       </div>
       <div class="row">
-        <div class="title">
+        <div class="title one-third column">
 <p>  {{ titles[1] }}</p>
         </div>
 
-          <div class="video">
+          <div class="video two-thirds column">
             <video controls>
             <source src="{{video[1]}}" type="video/mp4"></video>
           </div>
       </div>
       <div class="row">
 
-        <div class="video">
+        <div class="video two-thirds column">
           <video controls>
           <source src="{{video[2]}}" type="video/mp4"></video>
         </div>
-        <div class="title">
+        <div class="title one-third column">
 <p>  {{titles[2]}} </p>
         </div>
       </div>
       <div class="row">
-        <div class="title">
+        <div class="title one-third column">
 <p>  {{titles[3]}} </p>
         </div>
 
-          <div class="video">
+          <div class="video two-thirds column">
             <video controls>
             <source src="{{video[3]}}" type="video/mp4"></video>
           </div>
       </div>
       <div class="row">
 
-        <div class="video">
+        <div class="video two-thirds column">
           <video controls>
           <source src="{{video[4]}}" type="video/mp4"></video>
         </div>
-        <div class="title">
+        <div class="title one-third column">
 <p>  {{titles[4]}} </p>
         </div>
       </div>
     </div>
   </div>
 </div>
-
+<script src="{{ url_for('static',filename='ResizeSensor.js') }}"></script>
+<script src="{{ url_for('static',filename='ElementQueries.js') }}"></script>
+<script src="{{ url_for('static',filename='main.js') }}"></script>
 </body>
 </html>

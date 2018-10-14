@@ -77,7 +77,7 @@ def getSongsByBPM(targetBPM, pageNum=1):
 def findMatches(bpm):
     matches = getSongsByBPM(bpm)
 
-    return list(map(lambda match: match['title'] + " " + match['artist'], matches))
+    return list(map(lambda match: match['title'] + " - " + match['artist'], matches))
 
 if __name__ == '__main__':
     #print(findMatches(126))

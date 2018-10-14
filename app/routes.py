@@ -9,6 +9,7 @@ from contructVideo import createVideoFiles
 
 results = [None] * 6
 matches = [""] * 5
+fileNames = [""] * 5
 
 def processSearch(givenLink):
     global results, matches
@@ -36,4 +37,5 @@ def index():
         return redirect(url_for('index'))
     print(results)
     print(matches)
-    return render_template('theonlyhtmlfileweneed.html', title='dan was here', form=form, titles=matches, video=results)
+    return render_template('theonlyhtmlfileweneed.html', title='Song Flong', form=form, titles=matches, video=results)
+
