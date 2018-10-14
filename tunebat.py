@@ -65,9 +65,9 @@ def getSongsByBPM(targetBPM, pageNum=1):
             title = titleParent.a.string
             artist = artistParent.a.string
             bpm = bpmParent.a.string
-            
+
             songs += [Song(title, artist, int(bpm), int(i))]
-        
+
         #print(title)
 
     songs.sort(key=lambda song : (abs(targetBPM - song.bpm), song.relPopularity))
@@ -82,4 +82,3 @@ def findMatches(bpm):
 if __name__ == '__main__':
     #print(findMatches(126))
     bpm = getTrackTuneBatBPM("All Day and all of the night")
-    print(bpm)

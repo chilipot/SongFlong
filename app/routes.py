@@ -8,9 +8,10 @@ from download import run as downloadVideos
 from contructVideo import createVideoFiles
 
 results = [None] * 6
+matches = [""] * 5
 
 def processSearch(givenLink):
-    global results
+    global results, matches
     flash('Converting video')
     print(givenLink.data)
     keywords = YouTube(givenLink.data).title
@@ -22,6 +23,8 @@ def processSearch(givenLink):
     print(matchlinks)
     files = downloadVideos(matchlinks)
     results = createVideoFiles(files)
+    results = list(map(lambda file: url_for('static', filename=file), results))
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -31,8 +34,6 @@ def index():
         flash('valid input')
         processSearch(form.url)
         return redirect(url_for('index'))
-<<<<<<< HEAD
-    return render_template('theonlyhtmlfileweneed.html', title='dan was here', form=form, video_1=results[0], video_2=results[1], video_3=results[2], video_4=results[3], video_5=results[4])
-=======
-    return render_template('theonlyhtmlfileweneed.html', title='Song Fling Flong', form=form)
->>>>>>> 797410659681ddf8b30af5921f40b830a580c69c
+    print(results)
+    print(matches)
+    return render_template('theonlyhtmlfileweneed.html', title='dan was here', form=form, titles=matches, video=results)

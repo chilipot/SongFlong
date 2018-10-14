@@ -4,7 +4,7 @@ import os
 videoclip = None
 
 def combineAV(audioPath):
-    downloadPath = os.getcwd() + r'\output'
+    downloadPath = os.getcwd() + r'\app\static\output'
     print(audioPath)
     audioclip = AudioFileClip(audioPath)
     final = videoclip.set_audio(audioclip)
@@ -13,7 +13,8 @@ def combineAV(audioPath):
     print(pathSplit)
     name = pathSplit[-1]
     print(name)
-    return final.write_videofile(downloadPath + r'\video' + name, threads=8, preset='ultrafast')
+    final.write_videofile(downloadPath + r'\video' + name, threads=8, preset='ultrafast')
+    return 'video' + name
 
 def createVideoFiles(files):
     print(files)
@@ -25,6 +26,9 @@ def createVideoFiles(files):
 
 
     print("done")
+    results = list(map(lambda file: 'output/' + file, results))
+    print(os.getcwd())
+    print(results)
     return results
 
 if __name__ == '__main__':

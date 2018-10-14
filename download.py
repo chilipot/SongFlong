@@ -56,6 +56,7 @@ class Video:
         p = (float(bytes_remaining) / float(size)) * float(100)
         if (int(p) % 5 == 0):
             print('%.2f %s' % (p, self.title))
+            print(self.yt)
 
 def downloadStreams(stream):
     downloadPath = os.getcwd() + r'\tmp'

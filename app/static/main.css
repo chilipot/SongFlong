@@ -2,7 +2,7 @@ h1 { font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Hel
 
 div.header {
   background-color: #191919;
-  height: 95vh;
+  height: 98vh;
   width: 100%;
 }
 
@@ -90,19 +90,23 @@ span {
   padding-top: 10vh;
 }
 
+.video {
+  width: 50%;
+  display: inline;
+}
+
 .row {
-  clear: both;
   margin: 0% 2.5%;
   width: 95%;
   height: auto;
   position: relative;
-  align-items: center;
-  text-align: center;
 }
 
-.video {
-  display: inline-block;
-  width: 60%;
+video {
+  display: inline;
+  position: relative;
+  left: -10px;
+  width: 55%;
   height: 50%;
   margin: 20px;
   background-color: #191919;
@@ -110,14 +114,8 @@ span {
 
 .title {
   display: inline-block;
-  width: 30%;
+  width: 25%;
   height: 50%;
   margin: 20px;
   background-color: #191919;
-}
-
-#iframe {
-  width: inherit;
-  height: inherit;
-  display: block;
 }
