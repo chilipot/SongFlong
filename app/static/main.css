@@ -1,0 +1,123 @@
+h1 { font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif; font-size: 24px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 26.4px; } h3 { font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 15.4px; } p, input { font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 20px; } blockquote { font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif; font-size: 21px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 30px; } pre { font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif; font-size: 13px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 18.5714px; }
+
+div.header {
+  background-color: #191919;
+  height: 95vh;
+  width: 100%;
+}
+
+body {
+  margin: 0px;
+  color: white;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+img {
+  align-self: center;
+}
+
+h1 {
+  font-size: 5rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+img#hum {
+  height: 9vh;
+}
+
+.jumbotron {
+  position: relative;
+  display: block;
+  top: 20%;
+}
+
+form {
+  width: 60vh;
+  margin: auto;
+  margin-top: 40px;
+}
+
+input {
+  display: inline;
+  position: relative;
+}
+
+span {
+  text-align: center;
+}
+
+#url {
+  width: 50vh;
+  height: 6vh;
+  background-color: black;
+  opacity: .5;
+  border: none;
+  float: left;
+  color: white;
+  padding-left: 20px;
+}
+
+#submit {
+  width: 10vh;
+  height: 6vh;
+  background-image: url('Symbol 3 – 1.png');
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+#git {
+  text-decoration: none;
+  color: white;
+  font-size: 1.2rem;
+  margin-top: 3rem;
+}
+
+.content {
+  background-image: url('Symbol 3 – 1@2x.png');
+  background-repeat: space;
+  height: 100%;
+  width: 100%;
+  padding-bottom: 2000px;
+}
+
+.videos {
+  padding-top: 10vh;
+}
+
+.row {
+  clear: both;
+  margin: 0% 2.5%;
+  width: 95%;
+  height: auto;
+  position: relative;
+  align-items: center;
+  text-align: center;
+}
+
+.video {
+  display: inline-block;
+  width: 60%;
+  height: 50%;
+  margin: 20px;
+  background-color: #191919;
+}
+
+.title {
+  display: inline-block;
+  width: 30%;
+  height: 50%;
+  margin: 20px;
+  background-color: #191919;
+}
+
+#iframe {
+  width: inherit;
+  height: inherit;
+  display: block;
+}

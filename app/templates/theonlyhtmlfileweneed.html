@@ -5,28 +5,100 @@
   {% else %}
   <title>SET THE FUCKING TITLE</title>
   {% endif %}
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='main.css') }}">
 </head>
 <body>
-<h1>Change Music</h1>
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<ul>
-    {% for message in messages %}
-    <li>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
-{% endwith %}
-<form action="" method="post">
-  {{ form.csrf_token }}
-    <p>
-        {{ form.url.label }}<br>
-        {{ form.url(size=32) }}
+<div class="wrapper">
+  <div class="header">
+    <div class="container jumbotron">
+      <img src="https://hackumass.com/assets/img/logo.png" alt="hackumass" id="hum">
+      <h1>A NAME TO BE DECIDED</h1>
+      <h3>Can a music video still work for a different song?</h3>
+
+      <form action="" method="post">
+
+        {{ form.csrf_token }}
+          <div>
+                      {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                      <ul>
+                          {% for message in messages %}
+                          <li>{{ message }}</li>
+                          {% endfor %}
+                      </ul>
+                      {% endif %}
+                      {% endwith %}
+              {{ form.url(size=32, placeholder="YouTube URL...") }}
+
+          <p>{{ form.submit() }}</p>
+        </div>
         {% for error in form.url.errors %}
-<span style="color: red;">[{{ error }}]</span>
+              <p style="color: #C20669;">{{ error }}</p>
 {% endfor %}
-    </p>
-    <p>{{ form.submit() }}</p>
-</form>
+      </form>
+
+      <a id="git" href="https://github.com/skylers27/Sound-Repo-Thing">Source Code</a>
+
+    </div>
+  </div>
+
+  <div class="content" style="clear:both">
+    <div class="videos">
+
+      <div class="row">
+
+        <div class="video">
+          <video controls>
+          <source src="static\videoaudioAny Way You Want Itmp4.mp4" type="video/mp4">
+          <source src="{{video_1}}" type="video/mp4"></video>
+        </div>
+        <div class="title">
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="title">
+
+        </div>
+
+          <div class="video">
+            <video controls>
+            <source src="{{video_2}}" type="video/mp4"></video>
+          </div>
+      </div>
+      <div class="row">
+
+        <div class="video">
+          <video controls>
+          <source src="{{video_3}}" type="video/mp4"></video>
+        </div>
+        <div class="title">
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="title">
+
+        </div>
+
+          <div class="video">
+            <video controls>
+            <source src="{{video_4}}" type="video/mp4"></video>
+          </div>
+      </div>
+      <div class="row">
+
+        <div class="video">
+          <video controls>
+          <source src="{{video_5}}" type="video/mp4"></video>
+        </div>
+        <div class="title">
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
