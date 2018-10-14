@@ -31,4 +31,8 @@ def index():
         flash('valid input')
         processSearch(form.url)
         return redirect(url_for('index'))
+<<<<<<< HEAD
     return render_template('theonlyhtmlfileweneed.html', title='dan was here', form=form, video_1=results[0], video_2=results[1], video_3=results[2], video_4=results[3], video_5=results[4])
+=======
+    return render_template('theonlyhtmlfileweneed.html', title='Song Fling Flong', form=form)
+>>>>>>> 797410659681ddf8b30af5921f40b830a580c69c
