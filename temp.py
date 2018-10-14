@@ -154,7 +154,7 @@ for m in range(int(len(y)/fsamp/window)):
 	plt.xlabel('frequency [Hz]')
 	plt.ylabel('PSD [V**2/Hz]')
 	plt.title('Iteration: '+ str(m))
-	#plt.show()
+	plt.show()
 
 	i = 0
 	maxfreq = 0
