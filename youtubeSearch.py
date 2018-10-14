@@ -5,6 +5,7 @@ import json
 from download import run as downloadFromLinks
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
+from video import VideoData
 
 DEVELOPER_KEY = "AIzaSyCUqAGy-BkcxGU0QZqVSPsxrnAvkWK6CUo"
 YOUTUBE_API_SERVICE_NAME = "youtube"
@@ -57,17 +58,19 @@ def geo_query(video_id):
 
     return video_response
 
-def getAudioLink(title):
+def getAudioLink(video):
+    title = video.keywords
     nt, res = youtube_search(title + ' audio')
     try:
         videoId = res[0]['id']['videoId']
-        return 'https://www.youtube.com/watch?v=%s' % videoId
+        video.url = 'https://www.youtube.com/watch?v=%s' % videoId
+        return video
     except:
         print("No Video Found... Search Failed")
 
-def findAllLinks(keywords):
+def findAllLinks(video):
     pool = ThreadPool(5)
-    results = pool.map(getAudioLink, keywords)
+    results = pool.map(getAudioLink, video)
     pool.close()
     pool.join()
     return list(results)

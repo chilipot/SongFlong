@@ -58,29 +58,30 @@ class Video:
             print('%.2f %s' % (p, self.title))
             #print(self.yt)
 
-def downloadStreams(stream):
+def downloadStreams(data):
     downloadPath = os.getcwd() + r'\tmp'
-    path = stream.download(output_path=downloadPath, filename=stream.type + stream.default_filename)
+    path = data.stream.download(output_path=downloadPath, filename=data.stream.type + data.stream.default_filename)
+    data.tempLoc = path
 
-def run(urls):
+def run(data):
     streams = []
     try:
-        streams.append(Video(urls[0]).getVideoStream())
-        #start = time.time() # Debug
+        data[0].stream = Video(data[0].url).getVideoStream()
+        streams.append(data[0])
+        start = time.time() # Debug
         pool = ThreadPool(5)
-        def addAudioStreams(link):
-            yt = Video(link)
+        def addAudioStreams(data):
+            yt = Video(data.url)
             av = yt.getAudioStream()
             if av is not None:
-                streams.append(av)
+                data.stream = av
+                streams.append(data)
 
-        pool.map(addAudioStreams, urls[1:])
+        pool.map(addAudioStreams, data[1:])
         pool.close()
         pool.join()
-        #end = time.time() # Debug
-        #print("Time: " + str(end - start))
-        #for url in urls[1:]:
-        #    addAudioStreams(url)
+        end = time.time() # Debug
+        print("Time: " + str(end - start))
 
     except URLError as e:
         print("Connection Error: Check Internet Connection or YouTube Link")

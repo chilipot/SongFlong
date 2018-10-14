@@ -6,36 +6,40 @@ from tunebat import findMatches, getTrackTuneBatBPM
 from youtubeSearch import findAllLinks as search
 from download import run as downloadVideos
 from contructVideo import createVideoFiles
+from video import VideoData
 
 results = [None] * 6
 matches = [""] * 5
-fileNames = [""] * 5
+curVideoData = []
+
 
 def processSearch(givenLink):
-    global results, matches
-    flash('Converting video')
-    print(givenLink.data)
-    keywords = YouTube(givenLink.data).title
+    global curVideoData, results
+    keywords = YouTube(givenLink).title
     bpm = getTrackTuneBatBPM(keywords)
-    matches = findMatches(bpm)[0:5]
+    matches = findMatches(bpm)[:5]
     print(matches)
-    matchlinks = [givenLink.data]
-    matchlinks.extend(search(matches))
-    print(matchlinks)
-    files = downloadVideos(matchlinks)
-    results = createVideoFiles(files)
-    results = list(map(lambda file: url_for('static', filename=file), results))
+    curVideoData.append(VideoData(url=givenLink, keywords=keywords, title=keywords))
+    curVideoData.extend(search(matches))
+    print(curVideoData)
+    downloadVideos(curVideoData)
+    createVideoFiles(curVideoData)
+    print(curVideoData)
+    print(curVideoData[0])
+    print(curVideoData[0].final)
+    results = list(map(lambda data: url_for('static', filename=data.final), curVideoData[1:]))
+
+
+
+
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = VideoURL()
-    print('anything')
     if form.validate_on_submit():
-        flash('valid input')
-        processSearch(form.url)
+        processSearch(form.url.data)
         return redirect(url_for('index'))
     print(results)
     print(matches)
-    return render_template('theonlyhtmlfileweneed.html', title='Song Flong', form=form, titles=matches, video=results)
-
+    return render_template('theonlyhtmlfileweneed.html', title='Song Flong', form=form, titles=list(map(lambda data: data.title, curVideoData[1:])), video=results)
