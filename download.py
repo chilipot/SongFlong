@@ -8,6 +8,7 @@ import requests
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 from urllib.error import URLError
+from video import VideoData
 
 import time # Debug
 
@@ -92,9 +93,6 @@ def run(data):
     pool.join()
     return(files)
 
-# downloadVideo(link, link2) 314s
-#mulitple(links) #174
-
 if __name__ == '__main__':
-    run(['https://www.youtube.com/watch?v=_ovdm2yX4MA']) #118
+    run([VideoData(keywords="test", title="test1", url='https://www.youtube.com/watch?v=_ovdm2yX4MA'), VideoData(keywords="test", title="test2", url='https://www.youtube.com/watch?v=_ovdm2yX4MA')]) #118
     print(files)
