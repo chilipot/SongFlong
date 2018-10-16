@@ -7,6 +7,7 @@ from youtubeSearch import findAllLinks as search
 from download import run as downloadVideos
 from contructVideo import createVideoFiles
 from video import VideoData
+from multiprocessing import Process
 
 curVideoData = []*5
 
@@ -36,7 +37,7 @@ def processSearch(givenLink):
 def index():
     form = VideoURL()
     if form.validate_on_submit():
-        processSearch(form.url.data)
+        Process(processSearch(form.url.data)).start()
         return redirect(url_for('index'))
     print(curVideoData)
     if curVideoData:
