@@ -8,19 +8,16 @@ import requests
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 from urllib.error import URLError
-from video import VideoData
-
-import time # Debug
-
-link = 'https://www.youtube.com/watch?v=fWNaR-rxAic'
-link2 = 'https://www.youtube.com/watch?v=VYOjWnS4cMY'
-links = ['https://www.youtube.com/watch?v=fWNaR-rxAic',
-'https://www.youtube.com/watch?v=VYOjWnS4cMY']
+from .video import VideoData
+import time
 
 files = {
     'video': None,
     'audio': []
 }
+
+audiotime = 0
+videotime = 0
 
 class Video:
     def __init__(self, url):
@@ -60,37 +57,51 @@ class Video:
             #print(self.yt)
 
 def downloadStreams(data):
+    global audiotime, videotime
+    startd = time.time() # Debug
     downloadPath = os.getcwd() + r'\tmp'
     path = data.stream.download(output_path=downloadPath, filename=data.stream.type + data.stream.default_filename)
     data.tempLoc = path
+    endd = time.time() # Debug
+
+    if data.stream.type == 'audio':
+        audiotime += (endd - startd)
+    else:
+        videotime += (endd - startd)
+    
+    #print("Download a stream: " + str(endd - startd)) # Debug
 
 def run(data):
+    start = time.time() # Debug
     streams = []
     try:
         data[0].stream = Video(data[0].url).getVideoStream()
         streams.append(data[0])
-        start = time.time() # Debug
+        
         pool = ThreadPool(5)
-        def addAudioStreams(data):
-            yt = Video(data.url)
+        def addAudioStreams(dataObj):
+            yt = Video(dataObj.url)
             av = yt.getAudioStream()
             if av is not None:
-                data.stream = av
-                streams.append(data)
+                dataObj.stream = av
+                streams.append(dataObj)
 
         pool.map(addAudioStreams, data[1:])
         pool.close()
         pool.join()
-        end = time.time() # Debug
-        print("Time: " + str(end - start))
 
     except URLError as e:
         print("Connection Error: Check Internet Connection or YouTube Link")
-    print(streams)
+    #print(streams)
     pool = ThreadPool(6)
+    end = time.time() # Debug
+    print("Getting all streams: " + str(end - start))
     results = pool.map(downloadStreams, streams)
     pool.close()
     pool.join()
+    global audiotime, videotime
+    print("Avg downloading audio files: %s\nDownloading video file: %s" % (str(audiotime / 5), str(videotime)))
+    
     return(files)
 
 if __name__ == '__main__':

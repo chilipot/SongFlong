@@ -2,36 +2,51 @@ from app import app
 from flask import render_template, flash, redirect, url_for
 from app.forms import VideoURL
 from pytube import YouTube
-from tunebat import findMatches, getTrackTuneBatBPM
-from youtubeSearch import findAllLinks as search
-from download import run as downloadVideos
-from contructVideo import createVideoFiles
-from video import VideoData
 from multiprocessing import Process
+from songflong import *
+import time
 
 curVideoData = []*5
 
-
 def processSearch(givenLink):
-    global curVideoData
-    curVideoData = []*5
-    keywords = YouTube(givenLink).title
-    bpm = getTrackTuneBatBPM(keywords)
-    matches = findMatches(bpm)[:5]
-    print(matches)
-    curVideoData.append(VideoData(url=givenLink, keywords=keywords, title=keywords))
-    curVideoData.extend(search(matches))
-    print(curVideoData)
-    downloadVideos(curVideoData)
-    createVideoFiles(curVideoData)
-    print(curVideoData)
-    print(curVideoData[0])
-    print(curVideoData[0].final)
+	global curVideoData
 
+	start = time.time() # Timing
+	curVideoData = []*5
+	keywords = YouTube(givenLink).title
+	bpm = getTrackTuneBatBPM(keywords)
+	end = time.time() # Timing
 
+	get_bpm = str(end - start) # Timing
 
+	start = time.time() # Timing
+	matches = findMatches(bpm)[:5]
+	end = time.time() # Timing
 
+	print(matches)
+        
+	get_matches = str(end - start) # Timing
 
+	start = time.time() # Timing
+	curVideoData.append(VideoData(url=givenLink, keywords=keywords, title=keywords))
+	curVideoData.extend(search(matches))
+	end = time.time() # Timing
+
+	get_ytlinks = str(end - start)
+
+	start = time.time() # Timing
+	downloadVideos(curVideoData)
+	end = time.time() # Timing
+
+	get_downloads = str(end - start)
+
+	start = time.time() # Timing
+	createVideoFiles(curVideoData)
+	end = time.time() # Timing
+
+	get_vidfiles = str(end - start) # Timing
+
+	print("Get video BPM: %s\nGet video matches: %s\nGet matching videos' links: %s\nDownload audio/video streams from matching videos' links: %s\nGenerate Video Files: %s\n" % (get_bpm, get_matches, get_ytlinks, get_downloads, get_vidfiles))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -39,7 +54,7 @@ def index():
     if form.validate_on_submit():
         Process(processSearch(form.url.data)).start()
         return redirect(url_for('index'))
-    print(curVideoData)
+
     if curVideoData:
         return render_template('theonlyhtmlfileweneed.html', title='Song Flong', form=form, videoData=curVideoData[1:])
     else:
