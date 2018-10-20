@@ -1,79 +1,29 @@
 from app import app, socketio
 from flask import render_template, flash, redirect, url_for
 from app.forms import VideoURL
-<<<<<<< HEAD
 from songflong.searchProgram import Search
 from songflong.video import VideoData
 from multiprocessing import Process
 from threading import Thread
 import json
 from flask_socketio import emit
-=======
 from pytube import YouTube
 from multiprocessing import Process
 from songflong import *
 import time
+from songflong.user import User
+import os
 
 curVideoData = []*5
-
-def processSearch(givenLink):
-	global curVideoData
-
-	start = time.time() # Timing
-	curVideoData = []*5
-	keywords = YouTube(givenLink).title
-	bpm = getTrackTuneBatBPM(keywords)
-	end = time.time() # Timing
-
-	get_bpm = str(end - start) # Timing
-
-	start = time.time() # Timing
-	matches = findMatches(bpm)[:5]
-	end = time.time() # Timing
-
-	print(matches)
-        
-	get_matches = str(end - start) # Timing
-
-	start = time.time() # Timing
-	curVideoData.append(VideoData(url=givenLink, keywords=keywords, title=keywords))
-	curVideoData.extend(search(matches))
-	end = time.time() # Timing
->>>>>>> 1b11e60d06794253c75667fcf47b7e441712963e
-
-	get_ytlinks = str(end - start)
-
-	start = time.time() # Timing
-	downloadVideos(curVideoData)
-	end = time.time() # Timing
-
-<<<<<<< HEAD
 thread = Thread()
 curVideoData = None
-=======
-	get_downloads = str(end - start)
+temp = None
+user = None
 
-	start = time.time() # Timing
-	createVideoFiles(curVideoData)
-	end = time.time() # Timing
-
-	get_vidfiles = str(end - start) # Timing
-
-	print("Get video BPM: %s\nGet video matches: %s\nGet matching videos' links: %s\nDownload audio/video streams from matching videos' links: %s\nGenerate Video Files: %s\n" % (get_bpm, get_matches, get_ytlinks, get_downloads, get_vidfiles))
->>>>>>> 1b11e60d06794253c75667fcf47b7e441712963e
-
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
     global curVideoData, thread
     form = VideoURL()
-    if form.validate_on_submit():
-        if not thread.isAlive():
-            print("Starting Thread")
-            thread = Search(form.url.data)
-            temp = thread.start()
-
-            socketio.emit('my event',{'data': json.dumps(temp)})
-        return redirect(url_for('index'))
 
     if curVideoData:
         return render_template('theonlyhtmlfileweneed.html', title='Song Flong', form=form, videoData=curVideoData[1:])
@@ -86,14 +36,56 @@ def index():
         VideoData(None, title="placeholder", final='static/demo/video6.mp4', artist='placeholder', art=None)]
         return render_template('theonlyhtmlfileweneed.html', title='Song Flong', form=form, videoData=temp)
 
-@socketio.on('my event', namespace='/test')
-def test_message(message):
-    print(message['data']);
+def ack():
+    print('message was received!')
 
-    thread = Search(message['data'])
-    thread.start()
-    temp = thread.join()
-    print("Uploading")
-    j = json.dumps(temp)
-    if not temp is None:
-        emit('my response',j)
+def remove_temp(user):
+	parent = os.getcwd() + "\\app\\static\\" + user.uuid
+	output = os.getcwd() + "\\app\\static\\" + user.uuid + "\\output"
+	temp = os.getcwd() + "\\app\\static\\" + user.uuid + "\\temp"
+	for filename in os.listdir(output):
+		callthecommandhere(blablahbla, filename, foo)
+	for filename in os.listdir(temp):
+		callthecommandhere(blablahbla, filename, foo)
+	os.rmdir(temp)
+	os.rmdir(output)
+	os.rmdir(parent)
+
+@socketio.on('connect', namespace='/test')
+def test_connect():
+	emit('connection made', {'msg': 'connected'})
+
+@socketio.on('disconnect', namespace='/test')
+def test_disconnect():
+	global user
+	remove_temp(user)
+
+@socketio.on('send search', namespace='/test')
+def test_message(message):
+	emit('data created',{'msg': 'ready'}, callback=ack)
+	global user
+	user = User(message['data'])
+	print(user)
+	global temp
+	print(message['data']);
+	payload = []
+	thread = Search(user)
+	thread.start()
+	thread.join()
+	print(user)
+	print(user.data)
+	for file in user.data:
+		print(file)
+		data = {
+			'title': file.title,
+			'file': file.final,
+			'art': file.art,
+			'artist': file.artist
+		}
+		payload.append(data)
+	temp = payload
+
+@socketio.on('get data', namespace='/test')
+def get_data():
+	global temp
+	emit('send data', {'content': temp})

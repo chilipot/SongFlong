@@ -9,17 +9,12 @@ from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 from urllib.error import URLError
 from .video import VideoData
-<<<<<<< HEAD
-
-import time # Debug
+from .user import User
 
 link = 'https://www.youtube.com/watch?v=fWNaR-rxAic'
 link2 = 'https://www.youtube.com/watch?v=VYOjWnS4cMY'
 links = ['https://www.youtube.com/watch?v=fWNaR-rxAic',
 'https://www.youtube.com/watch?v=VYOjWnS4cMY']
-=======
-import time
->>>>>>> 1b11e60d06794253c75667fcf47b7e441712963e
 
 files = {
     'video': None,
@@ -62,32 +57,31 @@ class Video:
     def progressBar(self, stream, chunk,file_handle, bytes_remaining):
         size = stream.filesize
         p = (float(bytes_remaining) / float(size)) * float(100)
-        if (int(p) % 5 == 0):
-            print('%.2f %s' % (p, self.title))
+        # if (int(p) % 5 == 0):
+            # print('%.2f %s' % (p, self.title))
             #print(self.yt)
 
-def downloadStreams(data):
+def downloadStreams(load):
+    print(load)
+    data, user = load
     global audiotime, videotime
     startd = time.time() # Debug
-    downloadPath = os.getcwd() + r'\tmp'
+    downloadPath = user.downloadPath + r'\tmp'
     path = data.stream.download(output_path=downloadPath, filename=data.stream.type + data.stream.default_filename)
     data.tempLoc = path
+    data.stream = None
     endd = time.time() # Debug
 
-    if data.stream.type == 'audio':
-        audiotime += (endd - startd)
-    else:
-        videotime += (endd - startd)
-    
+
     #print("Download a stream: " + str(endd - startd)) # Debug
 
-def run(data):
+def run(user):
     start = time.time() # Debug
     streams = []
     try:
-        data[0].stream = Video(data[0].url).getVideoStream()
-        streams.append(data[0])
-        
+        user.data[0].stream = Video(user.data[0].url).getVideoStream()
+        streams.append(user.data[0])
+
         pool = ThreadPool(5)
         def addAudioStreams(dataObj):
             yt = Video(dataObj.url)
@@ -97,7 +91,7 @@ def run(data):
                 streams.append(dataObj)
 
 
-        pool.map(addAudioStreams, data[1:])
+        pool.map(addAudioStreams, user.data[1:])
         pool.close()
         pool.join()
 
@@ -107,17 +101,14 @@ def run(data):
     pool = ThreadPool(6)
     end = time.time() # Debug
     print("Getting all streams: " + str(end - start))
-    results = pool.map(downloadStreams, streams)
+    temp = []
+    for stream in streams:
+        temp.append((stream, user))
+    pool.map(downloadStreams, temp)
     pool.close()
     pool.join()
-<<<<<<< HEAD
-    for file in streams:
-        file.stream = None
-=======
     global audiotime, videotime
     print("Avg downloading audio files: %s\nDownloading video file: %s" % (str(audiotime / 5), str(videotime)))
-    
->>>>>>> 1b11e60d06794253c75667fcf47b7e441712963e
     return(files)
 
 if __name__ == '__main__':

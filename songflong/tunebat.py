@@ -3,18 +3,16 @@ import json
 import urllib
 import re
 from bs4 import BeautifulSoup, NavigableString
-<<<<<<< HEAD
 from .complex_json_encoder import *
 from .video import VideoData
-=======
 import songflong.complex_json_encoder as cje
 from songflong.video import VideoData
->>>>>>> 1b11e60d06794253c75667fcf47b7e441712963e
 
 def getTrackTuneBatBPM(inQuery):
     queryTokens = re.split(r'[\(\[]', inQuery)
-    query = queryTokens[min(1, len(queryTokens))].strip()
-    
+    print(queryTokens)
+    query = queryTokens[min(0, len(queryTokens))].strip()
+
     encodedQueryString = urllib.parse.urlencode({'q' : query})
     url = "https://tunebat.com/Search?" + encodedQueryString
     r = requests.get(url).content
@@ -23,8 +21,6 @@ def getTrackTuneBatBPM(inQuery):
 
     bpmString = resultElem.find_all(class_="row search-attribute-value")[2].string
 
-    #print(bpmString)
-    
     bpm = int(bpmString)
 
     return bpm
