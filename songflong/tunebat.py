@@ -2,8 +2,8 @@ import requests
 import json
 import urllib
 from bs4 import BeautifulSoup, NavigableString
-import complex_json_encoder as cje
-from video import VideoData
+from .complex_json_encoder import *
+from .video import VideoData
 
 def getTrackTuneBatBPM(query):
     encodedQueryString = urllib.parse.urlencode({'q' : query})
@@ -17,7 +17,7 @@ def getTrackTuneBatBPM(query):
 
     return bpm
 
-class Song(cje.ComplexJSONSerializable):
+class Song(ComplexJSONSerializable):
     def __init__(self, title, artist, bpm, relPopularity, albumArt):
         self.title = title
         self.artist = artist
@@ -57,7 +57,7 @@ def getSongsByBPM(targetBPM, pageNum=1):
 
     songs.sort(key=lambda song : (abs(targetBPM - song.bpm), song.relPopularity))
 
-    return json.loads(json.dumps(songs, cls=cje.ComplexEncoder))
+    return json.loads(json.dumps(songs, cls=ComplexEncoder))
 
 def findMatches(bpm):
     matches = getSongsByBPM(bpm)

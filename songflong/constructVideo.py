@@ -1,5 +1,5 @@
 import os
-from video import VideoData
+from .video import VideoData
 from moviepy.video.io.ffmpeg_tools import ffmpeg_merge_video_audio
 
 videoclip = None

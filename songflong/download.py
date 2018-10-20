@@ -8,7 +8,7 @@ import requests
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 from urllib.error import URLError
-from video import VideoData
+from .video import VideoData
 
 import time # Debug
 
@@ -78,6 +78,7 @@ def run(data):
                 data.stream = av
                 streams.append(data)
 
+
         pool.map(addAudioStreams, data[1:])
         pool.close()
         pool.join()
@@ -91,6 +92,8 @@ def run(data):
     results = pool.map(downloadStreams, streams)
     pool.close()
     pool.join()
+    for file in streams:
+        file.stream = None
     return(files)
 
 if __name__ == '__main__':

@@ -1,43 +1,29 @@
-from app import app
+from app import app, socketio
 from flask import render_template, flash, redirect, url_for
 from app.forms import VideoURL
-from pytube import YouTube
-from tunebat import findMatches, getTrackTuneBatBPM
-from youtubeSearch import findAllLinks as search
-from download import run as downloadVideos
-from contructVideo import createVideoFiles
-from video import VideoData
+from songflong.searchProgram import Search
+from songflong.video import VideoData
 from multiprocessing import Process
-
-curVideoData = []*5
-
-
-def processSearch(givenLink):
-    global curVideoData
-    curVideoData = []*5
-    keywords = YouTube(givenLink).title
-    bpm = getTrackTuneBatBPM(keywords)
-    matches = findMatches(bpm)[:5]
-    print(matches)
-    curVideoData.append(VideoData(url=givenLink, keywords=keywords, title=keywords))
-    curVideoData.extend(search(matches))
-    print(curVideoData)
-    downloadVideos(curVideoData)
-    createVideoFiles(curVideoData)
-    print(curVideoData)
-    print(curVideoData[0])
-    print(curVideoData[0].final)
+from threading import Thread
+import json
+from flask_socketio import emit
 
 
 
-
-
+thread = Thread()
+curVideoData = None
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    global curVideoData, thread
     form = VideoURL()
     if form.validate_on_submit():
-        Process(processSearch(form.url.data)).start()
+        if not thread.isAlive():
+            print("Starting Thread")
+            thread = Search(form.url.data)
+            temp = thread.start()
+
+            socketio.emit('my event',{'data': json.dumps(temp)})
         return redirect(url_for('index'))
     print(curVideoData)
     if curVideoData:
@@ -50,3 +36,15 @@ def index():
         VideoData(None, title="Sexy And I Know It", final='static/demo/video5.mp4', artist='LMFAO', art='https://upload.wikimedia.org/wikipedia/en/thumb/7/76/Sexy_and_I_Know_It_-_Single.png/220px-Sexy_and_I_Know_It_-_Single.png'),
         VideoData(None, title="placeholder", final='static/demo/video6.mp4', artist='placeholder', art=None)]
         return render_template('theonlyhtmlfileweneed.html', title='Song Flong', form=form, videoData=temp)
+
+@socketio.on('my event', namespace='/test')
+def test_message(message):
+    print(message['data']);
+
+    thread = Search(message['data'])
+    thread.start()
+    temp = thread.join()
+    print("Uploading")
+    j = json.dumps(temp)
+    if not temp is None:
+        emit('my response',j)

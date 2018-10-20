@@ -2,10 +2,10 @@ from apiclient.discovery import build
 from apiclient.errors import HttpError
 from oauth2client.tools import argparser
 import json
-from download import run as downloadFromLinks
+from .download import run as downloadFromLinks
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
-from video import VideoData
+from .video import VideoData
 
 DEVELOPER_KEY = "AIzaSyCUqAGy-BkcxGU0QZqVSPsxrnAvkWK6CUo"
 YOUTUBE_API_SERVICE_NAME = "youtube"

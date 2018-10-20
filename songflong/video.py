@@ -1,6 +1,7 @@
 import pytube
+from .complex_json_encoder import *
 
-class VideoData:
+class VideoData(ComplexJSONSerializable):
     def __init__(self,keywords, title, url=None, art=None, artist=None, stream=None, tempLoc=None, final=None):
         self.title = title
         self.url = url
