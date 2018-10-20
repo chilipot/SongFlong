@@ -44,9 +44,9 @@ def remove_temp(user):
 	output = os.getcwd() + "\\app\\static\\" + user.uuid + "\\output"
 	temp = os.getcwd() + "\\app\\static\\" + user.uuid + "\\temp"
 	for filename in os.listdir(output):
-		callthecommandhere(blablahbla, filename, foo)
+		os.remove(filename)
 	for filename in os.listdir(temp):
-		callthecommandhere(blablahbla, filename, foo)
+		os.remove(filename)
 	os.rmdir(temp)
 	os.rmdir(output)
 	os.rmdir(parent)
