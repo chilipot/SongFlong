@@ -1,19 +1,31 @@
 import requests
 import json
 import urllib
+import re
 from bs4 import BeautifulSoup, NavigableString
+<<<<<<< HEAD
 from .complex_json_encoder import *
 from .video import VideoData
+=======
+import songflong.complex_json_encoder as cje
+from songflong.video import VideoData
+>>>>>>> 1b11e60d06794253c75667fcf47b7e441712963e
 
-def getTrackTuneBatBPM(query):
+def getTrackTuneBatBPM(inQuery):
+    queryTokens = re.split(r'[\(\[]', inQuery)
+    query = queryTokens[min(1, len(queryTokens))].strip()
+    
     encodedQueryString = urllib.parse.urlencode({'q' : query})
     url = "https://tunebat.com/Search?" + encodedQueryString
     r = requests.get(url).content
     soup = BeautifulSoup(r, 'lxml')
-
     resultElem = soup.find(class_="search-info-container")
 
-    bpm = int(resultElem.find_all(class_="row search-attribute-value")[2].string)
+    bpmString = resultElem.find_all(class_="row search-attribute-value")[2].string
+
+    #print(bpmString)
+    
+    bpm = int(bpmString)
 
     return bpm
 
@@ -28,7 +40,6 @@ class Song(ComplexJSONSerializable):
 
 def getSongsByBPM(targetBPM, pageNum=1):
     url = "https://jog.fm/popular-workout-songs?bpm=" + str(targetBPM) + "&page=" + str(pageNum)
-    print(url)
     page = requests.get(url).content
 
     soup = BeautifulSoup(page, 'lxml')
@@ -53,7 +64,6 @@ def getSongsByBPM(targetBPM, pageNum=1):
 
             songs += [Song(title, artist, int(bpm), int(i), art)]
 
-        #print(title)
 
     songs.sort(key=lambda song : (abs(targetBPM - song.bpm), song.relPopularity))
 
@@ -61,7 +71,6 @@ def getSongsByBPM(targetBPM, pageNum=1):
 
 def findMatches(bpm):
     matches = getSongsByBPM(bpm)
-    print("IMPORTANT: " + matches[0]['albumArt'])
     return list(map(lambda match: VideoData(keywords=(match['title'] + " " + match['artist']),title=match['title'], artist=match['artist'], art=match['albumArt']), matches))
 
 

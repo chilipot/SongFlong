@@ -1,17 +1,66 @@
 from app import app, socketio
 from flask import render_template, flash, redirect, url_for
 from app.forms import VideoURL
+<<<<<<< HEAD
 from songflong.searchProgram import Search
 from songflong.video import VideoData
 from multiprocessing import Process
 from threading import Thread
 import json
 from flask_socketio import emit
+=======
+from pytube import YouTube
+from multiprocessing import Process
+from songflong import *
+import time
 
+curVideoData = []*5
 
+def processSearch(givenLink):
+	global curVideoData
 
+	start = time.time() # Timing
+	curVideoData = []*5
+	keywords = YouTube(givenLink).title
+	bpm = getTrackTuneBatBPM(keywords)
+	end = time.time() # Timing
+
+	get_bpm = str(end - start) # Timing
+
+	start = time.time() # Timing
+	matches = findMatches(bpm)[:5]
+	end = time.time() # Timing
+
+	print(matches)
+        
+	get_matches = str(end - start) # Timing
+
+	start = time.time() # Timing
+	curVideoData.append(VideoData(url=givenLink, keywords=keywords, title=keywords))
+	curVideoData.extend(search(matches))
+	end = time.time() # Timing
+>>>>>>> 1b11e60d06794253c75667fcf47b7e441712963e
+
+	get_ytlinks = str(end - start)
+
+	start = time.time() # Timing
+	downloadVideos(curVideoData)
+	end = time.time() # Timing
+
+<<<<<<< HEAD
 thread = Thread()
 curVideoData = None
+=======
+	get_downloads = str(end - start)
+
+	start = time.time() # Timing
+	createVideoFiles(curVideoData)
+	end = time.time() # Timing
+
+	get_vidfiles = str(end - start) # Timing
+
+	print("Get video BPM: %s\nGet video matches: %s\nGet matching videos' links: %s\nDownload audio/video streams from matching videos' links: %s\nGenerate Video Files: %s\n" % (get_bpm, get_matches, get_ytlinks, get_downloads, get_vidfiles))
+>>>>>>> 1b11e60d06794253c75667fcf47b7e441712963e
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -25,7 +74,7 @@ def index():
 
             socketio.emit('my event',{'data': json.dumps(temp)})
         return redirect(url_for('index'))
-    print(curVideoData)
+
     if curVideoData:
         return render_template('theonlyhtmlfileweneed.html', title='Song Flong', form=form, videoData=curVideoData[1:])
     else:
