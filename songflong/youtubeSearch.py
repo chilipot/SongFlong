@@ -1,5 +1,5 @@
-from apiclient.discovery import build
-from apiclient.errors import HttpError
+from googleapiclient import discovery
+from googleapiclient.errors import HttpError
 from oauth2client.tools import argparser
 import json
 from .download import run as downloadFromLinks
@@ -16,7 +16,7 @@ YOUTUBE_API_VERSION = "v3"
 
 def youtube_search(q, max_results=5,order="relevance", token=None, location=None, location_radius=None):
 
-  youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+  youtube = discover.build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
     developerKey=DEVELOPER_KEY)
 
   search_response = youtube.search().list(
@@ -47,7 +47,7 @@ def youtube_search(q, max_results=5,order="relevance", token=None, location=None
 
 
 def geo_query(video_id):
-    youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+    youtube = discovery.build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
                     developerKey=DEVELOPER_KEY)
 
     video_response = youtube.videos().list(
