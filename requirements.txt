@@ -17,6 +17,7 @@ imageio==2.5.0
 imageio-ffmpeg==0.3.0
 itsdangerous==1.1.0
 Jinja2==2.10.1
+lxml==4.4.1
 MarkupSafe==1.1.1
 moviepy==1.0.0
 numpy==1.17.2
