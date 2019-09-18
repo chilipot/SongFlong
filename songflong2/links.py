@@ -1,6 +1,7 @@
 from googleapiclient import discovery
 
-DEVELOPER_KEY = "AIzaSyCUqAGy-BkcxGU0QZqVSPsxrnAvkWK6CUo"
+DEVELOPER_KEY = "AIzaSyAIRWZvhVaDPx_eIaX4cBF_KdR3_pVfiaw"
+# DEVELOPER_KEY = "AIzaSyCUqAGy-BkcxGU0QZqVSPsxrnAvkWK6CUo"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
