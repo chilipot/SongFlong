@@ -51,7 +51,8 @@ def transcribe_video(video_file: Path, audio_file: Path, download_dir: Path):
     :param download_dir: The session directory
     :type download_dir: Path
     """
-    ffmpeg_merge_video_audio(str(video_file), str(audio_file), str(download_dir / f"output-{uuid.uuid4()}.mp4"),
+    ffmpeg_merge_video_audio(str(video_file), str(audio_file),
+                             str(download_dir / f"output-{uuid.uuid4()}.mp4"),
                              vcodec='copy', acodec='copy', ffmpeg_output=True)
 
 
