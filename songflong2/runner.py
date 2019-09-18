@@ -76,7 +76,7 @@ class VideoWorker(Thread):
                 self.queue.task_done()
 
 
-class DownloadQueue:
+class DownloadQueue(object):
     """A Queue to hold download links and spawns workers"""
 
     @classmethod
