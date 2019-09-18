@@ -42,6 +42,8 @@ def download_stream(video_url, itag, download_dir):
         for chunk in chunks:
             outfile.write(chunk)
 
+    return Path(filename)
+
 
 def download_chunk(args):
     """
@@ -67,7 +69,7 @@ def download_audio_stream(url: str, download_dir: Path) -> Path:
 
     :param url: A YouTube link
     :type url: str
-    :param downlaod_dir: The directory to download the stream to
+    :param download_dir: The directory to download the stream to
     :type download_dir: Path
     :returns: The Path of the downloaded audio stream
     :rtype: Path
@@ -86,7 +88,7 @@ def download_video_stream(url: str, download_dir: Path) -> Path:
 
     :param url: A YouTube link
     :type url: str
-    :param downlaod_dir: The directory to download the stream to
+    :param download_dir: The directory to download the stream to
     :type download_dir: Path
     :returns: The Path of the downloaded video stream
     :rtype: Path
