@@ -6,33 +6,38 @@ from bs4 import BeautifulSoup, NavigableString
 
 import json
 
+
 class ComplexJSONSerializable:
     def reprJSON(self):
         return self.__dict__
 
+
 class ComplexEncoder(json.JSONEncoder):
     def default(self, obj):
-        if hasattr(obj,'reprJSON'):
+        if hasattr(obj, 'reprJSON'):
             return obj.reprJSON()
         else:
             return json.JSONEncoder.default(self, obj)
 
-def getTrackTuneBatBPM(inQuery):
+
+def get_track_bpm(inQuery):
     queryTokens = re.split(r'[\(\[]', inQuery)
     # print(queryTokens)
     query = queryTokens[min(0, len(queryTokens))].strip()
 
-    encodedQueryString = urllib.parse.urlencode({'q' : query})
+    encodedQueryString = urllib.parse.urlencode({'q': query})
     url = "https://tunebat.com/Search?" + encodedQueryString
     r = requests.get(url).content
     soup = BeautifulSoup(r, 'lxml')
     resultElem = soup.find(class_="search-info-container")
 
-    bpmString = resultElem.find_all(class_="row search-attribute-value")[2].string
+    bpmString = resultElem.find_all(
+        class_="row search-attribute-value")[2].string
 
     bpm = int(bpmString)
 
     return bpm
+
 
 class Song(ComplexJSONSerializable):
     def __init__(self, title, artist, bpm, relPopularity, albumArt):
@@ -43,13 +48,14 @@ class Song(ComplexJSONSerializable):
         self.albumArt = albumArt
 
 
-def getSongsByBPM(targetBPM, pageNum=1):
-    url = "https://jog.fm/popular-workout-songs?bpm=" + str(targetBPM) + "&page=" + str(pageNum)
+def get_songs_by_bpm(targetBPM, pageNum=1):
+    url = "https://jog.fm/popular-workout-songs?bpm=" + \
+        str(targetBPM) + "&page=" + str(pageNum)
     page = requests.get(url).content
 
     soup = BeautifulSoup(page, 'lxml')
 
-    entries =  soup.find_all(class_="song list-item")
+    entries = soup.find_all(class_="song list-item")
 
     songs = []
 
@@ -57,7 +63,8 @@ def getSongsByBPM(targetBPM, pageNum=1):
         titleParent = entry.findChild("div", class_="title")
         artistParent = entry.findChild("div", class_="top")
         bpmParent = entry.findChild("div", class_="side-box fixed")
-        bpmParent = bpmParent.findChild("div", class_="middle") if bpmParent is not None else bpmParent
+        bpmParent = bpmParent.findChild(
+            "div", class_="middle") if bpmParent is not None else bpmParent
         artParent = entry.findChild('div', class_='media')
 
         if (titleParent is not None and artistParent is not None and bpmParent is not None):
@@ -69,8 +76,8 @@ def getSongsByBPM(targetBPM, pageNum=1):
 
             songs += [Song(title, artist, int(bpm), int(i), art)]
 
-
-    songs.sort(key=lambda song : (abs(targetBPM - song.bpm), song.relPopularity))
+    songs.sort(key=lambda song: (
+        abs(targetBPM - song.bpm), song.relPopularity))
 
     song_data = json.loads(json.dumps(songs, cls=ComplexEncoder))[:5]
 
@@ -78,7 +85,7 @@ def getSongsByBPM(targetBPM, pageNum=1):
 
 
 if __name__ == '__main__':
-    bpm = getTrackTuneBatBPM("All Day and all of the night")
+    bpm = get_track_bpm("All Day and all of the night")
     print(bpm)
-    songs = getSongsByBPM(bpm)
+    songs = get_songs_by_bpm(bpm)
     print(songs)

@@ -35,7 +35,8 @@ def youtube_search(query: str) -> list:
             in search_response.get("items", [])
             if search_result["id"]["kind"] == "youtube#video"]
 
-def getYouTubeLink(title: str) -> list:
+
+def get_youtube_link(title: str) -> list:
     """
     Searches YouTube and builds a link to the most relevant video.
 
@@ -51,7 +52,8 @@ def getYouTubeLink(title: str) -> list:
     except IndexError or KeyError:
         print("No Video Found... Search Failed")
 
-def findAllLinks(titles: list) -> list:
+
+def find_all_links(titles: list) -> list:
     """
     Returns the YouTube links of the given song titles.
 
@@ -61,7 +63,7 @@ def findAllLinks(titles: list) -> list:
     :rtype: list
     """
 
-    return [getYouTubeLink(title) for title in titles]
+    return [get_youtube_link(title) for title in titles]
 
 
 if __name__ == '__main__':
@@ -75,6 +77,7 @@ if __name__ == '__main__':
     bpm = getTrackTuneBatBPM(song_input)
     songs = getSongsByBPM(bpm)
     # print(songs)
-    print(f"{song_input} - {getYouTubeLink(song_input)}")
-    print([f"{song} - {link}" for song, link in zip(songs, findAllLinks(songs))])
-    print([(song, link) for song, link in zip(songs, findAllLinks(songs))])
+    print(f"{song_input} - {get_youtube_link(song_input)}")
+    print([f"{song} - {link}" for song,
+           link in zip(songs, find_all_links(songs))])
+    print([(song, link) for song, link in zip(songs, find_all_links(songs))])
