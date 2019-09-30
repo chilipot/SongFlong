@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from redis import StrictRedis
 from rq import Queue
 from .songflong import setup_download_dir, video_links, download_video_stream, generate_videos
@@ -37,7 +37,7 @@ def results(job_id):
         return 'Job has failed!', 400
 
     if job.is_finished:
-        return jsonify(result=job.result)
+        return send_file(filename_or_fp=str(job.result.absolute()))
 
     return 'Job has not finished!', 202
 

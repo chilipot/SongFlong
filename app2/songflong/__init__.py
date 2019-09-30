@@ -51,12 +51,14 @@ def transcribe_video(video_file: Path, audio_file: Path, download_dir: Path):
     :param download_dir: The session directory
     :type download_dir: Path
     """
-    ffmpeg_merge_video_audio(str(video_file), str(audio_file),
-                             str(download_dir / f"output-{uuid.uuid4()}.mp4"),
+    output = download_dir / f"output-{uuid.uuid4()}.mp4"
+    ffmpeg_merge_video_audio(str(video_file), str(audio_file), str(output),
                              vcodec='copy', acodec='copy', ffmpeg_output=True)
+    return output
 
 
 def generate_videos(video_file, title, link, download_dir):
     audio_file = download_audio_stream(link, download_dir)
-    transcribe_video(video_file, audio_file, download_dir)
+    finished_video = transcribe_video(video_file, audio_file, download_dir)
     print(f"******FINISHED TRANSCRIBING*****")
+    return finished_video
