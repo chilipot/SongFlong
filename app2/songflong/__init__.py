@@ -5,7 +5,7 @@ from queue import Queue
 from threading import Thread
 from time import time
 
-from moviepy.video.io.ffmpeg_tools import ffmpeg_merge_video_audio
+from .ffmpeg import ffmpeg_merge_video_audio
 
 from .download import download_video_stream, download_audio_stream
 from .links import get_youtube_link, find_all_links
@@ -39,6 +39,7 @@ def setup_download_dir():
         download_dir.mkdir()
     return download_dir
 
+    subprocess_call(cmd, verbose = verbose)
 
 def transcribe_video(video_file: Path, audio_file: Path, download_dir: Path):
     """
@@ -52,8 +53,7 @@ def transcribe_video(video_file: Path, audio_file: Path, download_dir: Path):
     :type download_dir: Path
     """
     output = download_dir / f"output-{uuid.uuid4()}.mp4"
-    ffmpeg_merge_video_audio(str(video_file), str(audio_file), str(output),
-                             vcodec='copy', acodec='copy', ffmpeg_output=True)
+    ffmpeg_merge_video_audio(video_file, audio_file, output)
     return output
 
 

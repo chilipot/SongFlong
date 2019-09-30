@@ -6,6 +6,10 @@ from bs4 import BeautifulSoup, NavigableString
 
 import json
 
+# This code works but in reality, I don't really know why its this complex.
+# Like, why do we have a Song object? Makes no sense; especially since it requires
+# a custom serializer.
+# And what's up with the json.loads(json.dumps())? Can we fix that please?
 
 class ComplexJSONSerializable:
     def reprJSON(self):
@@ -72,7 +76,6 @@ def get_songs_by_bpm(targetBPM, pageNum=1):
             artist = artistParent.a.string
             bpm = bpmParent.a.string
             art = artParent.a.img['src']
-            # print(f"Art {art}")
 
             songs += [Song(title, artist, int(bpm), int(i), art)]
 
