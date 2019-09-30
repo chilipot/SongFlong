@@ -7,9 +7,9 @@ from time import time
 
 from moviepy.video.io.ffmpeg_tools import ffmpeg_merge_video_audio
 
-from songflong2.download import download_video_stream, download_audio_stream
-from songflong2.links import get_youtube_link, find_all_links
-from songflong2.search import get_songs_by_bpm, get_track_bpm
+from .download import download_video_stream, download_audio_stream
+from .links import get_youtube_link, find_all_links
+from .search import get_songs_by_bpm, get_track_bpm
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

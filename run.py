@@ -1,3 +1,4 @@
-from app2 import app
+from app2.app import app
 
-app.run()
+
+app.run(host='0.0.0.0', port=8080, debug=True)

@@ -41,7 +41,7 @@ def download_stream(video_url, itag, download_dir):
     with open(filename, 'wb') as outfile:
         for chunk in chunks:
             outfile.write(chunk)
-
+    print(filename)
     return Path(filename)
 
 
@@ -97,7 +97,7 @@ def download_video_stream(url: str, download_dir: Path) -> Path:
     try:
         logger.info(f"Downloading video stream -> {url}")
         return download_stream(url, 135, download_dir)
-    except:
+    except Exception as e:
         logger.error(f"Unable to find an video stream for {url}")
 
 
