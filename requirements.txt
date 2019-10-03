@@ -19,7 +19,7 @@ proglog==0.1.9
 pyasn1==0.4.7
 pyasn1-modules==0.2.6
 python-dateutil==2.8.0
-pytube==9.5.2
+-e git+https://github.com/bigg215/pytube.git@fac934b149bc2d49ea54d566e0639d9b4c2862d2#egg=pytube
 redis==3.3.8
 requests==2.22.0
 rq==1.1.0
