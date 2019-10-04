@@ -39,9 +39,9 @@ def get_songs_by_bpm(target_bpm, page_num=1):
         art_parent = entry.findChild('div', class_='media')
 
         if title_parent is not None and artist_parent is not None and bpm_parent is not None:
-            title = title_parent.a.string
-            artist = artist_parent.a.string
-            bpm = bpm_parent.a.string
+            title = title_parent.a.text
+            artist = artist_parent.text
+            bpm = bpm_parent.a.text
             art = art_parent.a.img['src']
             # print(f"Art {art}")
 

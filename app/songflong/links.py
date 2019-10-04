@@ -1,5 +1,6 @@
 import urllib.parse
 import urllib.request
+
 from bs4 import BeautifulSoup
 
 from app.songflong.bpm_search import get_track_bpm, get_songs_by_bpm
@@ -80,6 +81,7 @@ def video_links(initial_song: str) -> tuple:
     """
     bpm = get_track_bpm(initial_song)
     songs = get_songs_by_bpm(bpm)
+    song_titles = [song["title"] for song in songs]
 
     return get_youtube_link(initial_song, is_audio=False), \
-           [(song, link) for song, link in zip(songs, find_all_links(songs))]
+           [(song, link) for song, link in zip(songs, find_all_links(song_titles))]

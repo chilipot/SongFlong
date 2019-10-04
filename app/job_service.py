@@ -12,8 +12,8 @@ def setup_jobs(song_name: str) -> List[int]:
     video_link, similar_links = video_links(song_name)
     video_file = download_video_stream(video_link, download_dir)
     jobs = []
-    for title, link in similar_links:
-        job = current_app.q.enqueue(generate_videos, video_file, title, link, download_dir)
+    for song, link in similar_links:
+        job = current_app.q.enqueue(generate_videos, str(video_file), song["title"], link, str(download_dir))
         jobs.append(job.get_id())
     return jobs
 

@@ -29,6 +29,8 @@ def transcribe_video(video_file: Path, audio_file: Path, download_dir: Path) -> 
 
 
 def generate_videos(video_file, title, link, download_dir):
+    download_dir = Path(download_dir)
+    video_file = Path(video_file)
     audio_file = download_audio_stream(link, download_dir)
     finished_video = transcribe_video(video_file, audio_file, download_dir)
     print(f"******FINISHED TRANSCRIBING*****")
