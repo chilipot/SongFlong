@@ -2,6 +2,8 @@ import urllib.parse
 import urllib.request
 from bs4 import BeautifulSoup
 
+from app.songflong.bpm_search import get_track_bpm, get_songs_by_bpm
+
 
 def youtube_search(query: str) -> list:
     """
@@ -31,7 +33,7 @@ def youtube_search(query: str) -> list:
     return vid_links
 
 
-def get_youtube_link(title: str, is_audio=True) -> list:
+def get_youtube_link(title: str, is_audio=True) -> str:
     """
     Searches YouTube and builds a link to the most relevant video.
 
@@ -66,18 +68,18 @@ def find_all_links(titles: list, is_audio=True) -> list:
     return [get_youtube_link(title, is_audio) for title in titles]
 
 
-if __name__ == '__main__':
-    # print(getYouTubeLink("guns and roses paradise city"getYouTubeLink))
-    # print(findAllLinks(['Crescerai Nomadi', 'Come Sei Bella Massimo Di Cataldo',
-    #                     'Io vagabondo (che non sono altro) Nomadi', 'Hey - Original Mix Nightriders']))
+def video_links(initial_song: str) -> tuple:
+    """
+    Finds a list of songs with similar BPM to the given query song.
 
-    from search import getSongsByBPM, getTrackTuneBatBPM
+    :param initial_song: The title of the given song
+    :type initial_song: str
+    :returns: Tuple of the original link and list of tuples containing the song title, author, and YouTube link
+        of similar songs
+    :rtype: tuple
+    """
+    bpm = get_track_bpm(initial_song)
+    songs = get_songs_by_bpm(bpm)
 
-    song_input = "All Day and all of the night"
-    bpm = getTrackTuneBatBPM(song_input)
-    songs = getSongsByBPM(bpm)
-    # print(songs)
-    print(f"{song_input} - {get_youtube_link(song_input)}")
-    print([f"{song} - {link}" for song,
-           link in zip(songs, find_all_links(songs))])
-    print([(song, link) for song, link in zip(songs, find_all_links(songs))])
+    return get_youtube_link(initial_song, is_audio=False), \
+           [(song, link) for song, link in zip(songs, find_all_links(songs))]

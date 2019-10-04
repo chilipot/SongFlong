@@ -1,7 +1,9 @@
+from pathlib import Path
 from subprocess import DEVNULL
 import os
 import subprocess as sp
 import proglog
+from flask import current_app
 
 
 def subprocess_call(cmd):
@@ -35,7 +37,7 @@ def subprocess_call(cmd):
     del proc
 
 
-def ffmpeg_merge_video_audio(video, audio, output):
+def ffmpeg_merge_video_audio(video: Path, audio: Path, output: Path):
     """
     Merges video and audio files into a single movie file.
 
@@ -46,7 +48,7 @@ def ffmpeg_merge_video_audio(video, audio, output):
     :param output: The destination Path for the merged movie file
     :param output: Path
     """
-    cmd = ["/usr/bin/ffmpeg", "-y", "-i", str(audio), "-i", str(video),
+    cmd = [current_app.config.get("FFMPEG_PATH"), "-y", "-i", str(audio), "-i", str(video),
            "-vcodec", 'copy', "-acodec", 'copy', str(output)]
 
     subprocess_call(cmd)

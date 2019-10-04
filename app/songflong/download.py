@@ -1,6 +1,5 @@
 from pytube import YouTube
 from pathlib import Path
-from time import time
 import multiprocessing as mp
 from math import ceil
 import requests
@@ -99,14 +98,3 @@ def download_video_stream(url: str, download_dir: Path) -> Path:
         return download_stream(url, 135, download_dir)
     except Exception as e:
         logger.error(f"Unable to find an video stream for {url}")
-
-
-if __name__ == '__main__':
-    url = 'https://www.youtube.com/watch?v=VYOjWnS4cMY'
-
-    ts = time()
-    download_audio_stream(url, Path('temp'))
-    print('Took %s', time() - ts)
-    ts = time()
-    download_video_stream(url, Path('temp'))
-    print('Took %s', time() - ts)
