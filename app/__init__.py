@@ -1,13 +1,14 @@
+import os
 
 from flask import Flask
-from config import Config
-from flask_socketio import SocketIO
+from redis import StrictRedis
+from rq import Queue
 
-app = Flask(__name__)
-app.config.from_object(Config)
-socketio = SocketIO(app)
 
-from app import routes
-
-if __name__ == '__main__':
-    socketio.run(app)
+def create_app():
+    app = Flask(__name__)
+    app.config["FFMPEG_PATH"] = os.environ.get("FFMPEG_PATH", default="/usr/bin/ffmpeg")
+    app.q = Queue(connection=StrictRedis())
+    from app.routes import JOBS
+    app.register_blueprint(JOBS)
+    return app
