@@ -37,7 +37,7 @@ def subprocess_call(cmd):
     del proc
 
 
-def ffmpeg_merge_video_audio(video: Path, audio: Path, output: Path):
+def ffmpeg_merge_video_audio(video: Path, audio: Path, output: Path, ffmpeg_path: str):
     """
     Merges video and audio files into a single movie file.
 
@@ -48,7 +48,7 @@ def ffmpeg_merge_video_audio(video: Path, audio: Path, output: Path):
     :param output: The destination Path for the merged movie file
     :param output: Path
     """
-    cmd = [current_app.config.get("FFMPEG_PATH"), "-y", "-i", str(audio), "-i", str(video),
+    cmd = [ffmpeg_path, "-y", "-i", str(audio), "-i", str(video),
            "-vcodec", 'copy', "-acodec", 'copy', str(output)]
 
     subprocess_call(cmd)

@@ -6,6 +6,7 @@ import VideosContainer from "./VideosContainer";
 
 const App = () => {
   const [jobs, setJobs] = useState([]);
+  console.log(jobs);
   const startJobs = e => {
     const search = e.target.value;
     API.get(`/submit/${search}`).then(res => setJobs(res.data.job_ids || []));
