@@ -7,8 +7,9 @@ from rq import Queue
 
 def create_app():
     app = Flask(__name__, static_folder="../temp")
-    app.config["FFMPEG_PATH"] = os.environ.get("FFMPEG_PATH", default="/usr/bin/ffmpeg")
-    app.q = Queue(connection=StrictRedis())
+    app.config["FFMPEG_PATH"] = os.environ.get(
+        "FFMPEG_PATH", default="/usr/bin/ffmpeg")
+    app.q = Queue(connection=StrictRedis(host='redis', port='6379'))
     from app.routes import JOBS
     app.register_blueprint(JOBS)
     return app

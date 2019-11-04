@@ -4,7 +4,9 @@ import os
 import subprocess as sp
 import proglog
 from flask import current_app
+import logging
 
+logger = logging.getLogger('songflong_builder')
 
 def subprocess_call(cmd):
     """
@@ -48,7 +50,12 @@ def ffmpeg_merge_video_audio(video: Path, audio: Path, output: Path, ffmpeg_path
     :param output: The destination Path for the merged movie file
     :param output: Path
     """
+    
     cmd = [ffmpeg_path, "-y", "-i", str(audio), "-i", str(video),
            "-vcodec", 'copy', "-acodec", 'copy', str(output)]
 
-    subprocess_call(cmd)
+    try:
+        subprocess_call(cmd)
+    except Exception as err:
+        logger.warning(f"Merging audio:{str(audio)} and video:{str(video)} to output{str(output)}")
+        logger.error(err)
