@@ -36,4 +36,4 @@ def generate_videos(video_file, title, link, download_dir, ffmpeg_path):
     audio_file = download_audio_stream(link, download_dir)
     finished_video = transcribe_video(video_file, audio_file, download_dir, ffmpeg_path)
     print(f"******FINISHED TRANSCRIBING*****")
-    return {"filepath": str(finished_video).replace('temp/',''), "title": title}
+    return {"filepath": str(finished_video.name), "title": title}

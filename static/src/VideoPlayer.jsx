@@ -1,47 +1,30 @@
-import React, { useState } from 'react';
-import { Player } from 'video-react';
+import React, { useState, useEffect } from "react";
+import { Player, ControlBar } from "video-react";
+import "../node_modules/video-react/dist/video-react.css";
+import { BASE_URL } from "./utils/API";
+import Request from "axios-request-handler";
 
+const VideoPlayer = ({ id }) => {
+  const [video, setVideo] = useState("");
+  useEffect(() => {
+    const url = `${BASE_URL}/results/${id}`;
+    const jobResult = new Request(url);
+    jobResult.poll(1000).get(res => {
+      if (res.status === 400) {
+        throw "Unable To Retrieve Video Src";
+      } else if (res.status === 200) {
+        setVideo(res.data);
+        return false;
+      }
+      return true;
+    });
+  }, [id]);
 
-const VideoPlayer = props => {
-    const [video, setVideo] = useState("")
-    var endTime = Number(new Date()) + 10000;
-    function fn() {
-        const url = `http://localhost:5000/results/${props.id}`
-        fetch(url).then((res) => res.json()).then((json) => {
-            if (json.status == "Job has not finished!") {
-                return false
-            }
-            if (json.status == "Job has failed!") {
-                throw json.status
-            }
+  return (
+    <Player playsInline src={`${BASE_URL}/video/${video.filepath}`}>
+      <ControlBar />
+    </Player>
+  );
+};
 
-            // Really bad assumption but it we make it here, assume success
-            setVideo(`http://localhost:5000/video/${json.filepath}`)
-            return true
-        })
-        .catch((err) => console.log(err))
-    }
-
-    (function p() {
-            // If the condition is met, we're done! 
-            if(fn()) {
-                console.log("Hello")
-            }
-            // If the condition isn't met but the timeout hasn't elapsed, go again
-            else if (Number(new Date()) < endTime) {
-                setTimeout(p, 1000);
-            }
-            // Didn't match and too much time, reject!
-            else {
-                console.log("request timed out");
-            }
-    })();
-    return (
-        <Player
-            playsInline
-            src={video}
-        />
-    )
-}
-
-export default VideoPlayer
+export default VideoPlayer;

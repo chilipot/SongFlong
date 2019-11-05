@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./App.css";
 import SearchContainer from "./SearchContainer";
-import VideosContainer from "./VideosContainer";
-import VideoPlayer from './VideoPlayer';
-
-function poll(urls) {
-
-}
+import VideoPlayer from "./VideoPlayer";
+import { BASE_URL } from "./utils/API";
 
 const App = () => {
-  const [urls, setUrls] = useState([])
-  const search = (song) => {
-    const url = `http://localhost:5000/submit/${encodeURI(song)}`
+  const [jobIds, setJobIds] = useState([]);
+  const search = song => {
+    const url = `${BASE_URL}/submit/${encodeURI(song)}`;
 
     console.log(url);
-    fetch(url).then((res) => res.json()).then((json) => setUrls(json.job_ids));
-  }
+    fetch(url)
+      .then(res => res.json())
+      .then(json => setJobIds(json.job_ids));
+  };
 
   return (
     <div className="wrapper">
@@ -29,10 +27,9 @@ const App = () => {
           <h1>Song Flong</h1>
           <h3>Can a music video still work with a different song?</h3>
           <SearchContainer search={search} />
-          {urls.map((id) => {
-              return <VideoPlayer id={ id } key={ id }/>
-            })
-          }
+          {jobIds.map(id => (
+            <VideoPlayer id={id} key={id} />
+          ))}
           <a id="git" href="https://github.com/skylers27/Sound-Repo-Thing">
             Source Code
           </a>
