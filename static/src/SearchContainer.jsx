@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 
-const SearchContainer = ({ startJobs = () => null }) => {
+const SearchContainer = (props) => {
   return (
     <div>
       <input
@@ -9,7 +9,7 @@ const SearchContainer = ({ startJobs = () => null }) => {
         type="text"
         onKeyPress={e => {
           if (e.key === "Enter") {
-            startJobs(e);
+            props.search(e.target.value);
           }
         }}
       />
