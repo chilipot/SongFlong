@@ -2,6 +2,17 @@ version: '3.3'
 
 services: 
 
+  react:
+    build:
+      context: .
+      dockerfile: Dockerfile.react
+    image: songflong-react
+    command: nginx -g 'daemon off;'
+    ports:
+      - '8080:80'
+    depends_on: 
+      - songflong
+
   songflong:
     build: .
     image: songflong
