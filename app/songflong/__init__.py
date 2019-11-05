@@ -1,6 +1,8 @@
 import logging
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+log_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler = logging.StreamHandler()
+handler.setLevel(logging.INFO)
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('songflong_builder')
+logger.addHandler(handler)

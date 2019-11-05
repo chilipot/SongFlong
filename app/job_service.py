@@ -13,7 +13,12 @@ def setup_jobs(song_name: str) -> List[int]:
     video_file = download_video_stream(video_link, download_dir)
     jobs = []
     for song, link in similar_links:
-        job = current_app.q.enqueue(generate_videos, str(video_file), song["title"], link, str(download_dir))
+        job = current_app.q.enqueue(generate_videos,
+                                    str(video_file),
+                                    song["title"],
+                                    link,
+                                    str(download_dir),
+                                    current_app.config.get("FFMPEG_PATH"))
         jobs.append(job.get_id())
     return jobs
 
