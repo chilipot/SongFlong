@@ -94,5 +94,6 @@ def download_video_stream(url: str, download_dir: Path) -> Path:
     try:
         logger.info(f"Downloading video stream -> {url}")
         return download_stream(url, 135, download_dir)
-    except Exception as e:
+    except Exception as err:
         logger.error(f"Unable to find an video stream for {url}")
+        logger.exception(err)

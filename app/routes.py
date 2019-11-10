@@ -9,11 +9,18 @@ JOBS = Blueprint('jobs', __name__)
 def index():
     return "Hello, World!", 200
 
+@JOBS.route('/ping')
+def ping():
+    return "pong", 200
+
 
 @JOBS.route('/submit/<string:song_name>')
 def submit(song_name):
     jobs = job_service.setup_jobs(song_name)
-    return jsonify(job_ids=jobs)
+    if jobs:
+        return jsonify(job_ids=jobs)
+    else:
+        return {"status", 'Unable to find video stream!'}, 424
 
 
 @JOBS.route('/results/<string:job_id>')

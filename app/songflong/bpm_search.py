@@ -1,8 +1,11 @@
 import requests
 import urllib
 import re
+import logging
 from bs4 import BeautifulSoup
 
+logger = logging.getLogger('songflong_builder')
+logger.setLevel(logging.INFO)
 
 def get_track_bpm(in_query):
     query_tokens = re.split(r'[\(\[]', in_query)
@@ -13,6 +16,8 @@ def get_track_bpm(in_query):
     r = requests.get(url).content
     soup = BeautifulSoup(r, 'lxml')
     result_elem = soup.find(class_="search-info-container")
+    if result_elem is None:
+        logger.error("BPM Search failed to load the necessary search information")
 
     bpm_string = result_elem.find_all(
         class_="row search-attribute-value")[2].string

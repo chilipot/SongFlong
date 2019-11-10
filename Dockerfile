@@ -17,19 +17,17 @@ FROM python:3.7-alpine
 COPY --from=base-image /root/wheels /root/wheels
 
 COPY ./requirements.txt /songflong/requirements.txt
+COPY ./songflong.ini /songflong/songflong.ini
 
 WORKDIR /songflong
 
-RUN apk add --no-cache libxslt ffmpeg jpeg-dev zlib-dev git && \
+RUN apk add --no-cache libxslt ffmpeg git && \
     pip install \
       --no-index \
       --find-links=/root/wheels \
-      -r requirements.txt
-
+      -r requirements.txt &&\
+    apk del git
 
 COPY ./run.py /songflong/run.py
 COPY ./worker.py /songflong/worker.py
 COPY ./app /songflong/app
-
-ENTRYPOINT [ "python" ]
-CMD [ "run.py" ]
