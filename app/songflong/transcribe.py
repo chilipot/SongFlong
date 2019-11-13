@@ -30,10 +30,10 @@ def transcribe_video(video_file: Path, audio_file: Path, download_dir: Path, ffm
     return output
 
 
-def generate_videos(video_file, title, link, download_dir, ffmpeg_path):
+def generate_videos(video_file, link, download_dir, ffmpeg_path, **kwargs):
     download_dir = Path(download_dir)
     video_file = Path(video_file)
     audio_file = download_audio_stream(link, download_dir)
     finished_video = transcribe_video(video_file, audio_file, download_dir, ffmpeg_path)
     print(f"******FINISHED TRANSCRIBING*****")
-    return {"filepath": str(finished_video.name), "title": title}
+    return {"filepath": str(finished_video.name), **kwargs}

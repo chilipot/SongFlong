@@ -7,9 +7,9 @@ from app.songflong.download import download_video_stream
 from app.songflong.links import video_links
 from app.songflong.transcribe import setup_download_dir, generate_videos
 
-
 logger = logging.getLogger('songflong_builder')
 logger.setLevel(logging.INFO)
+
 
 def setup_jobs(song_name: str) -> List[int]:
     download_dir = setup_download_dir()
@@ -23,10 +23,10 @@ def setup_jobs(song_name: str) -> List[int]:
     for song, link in similar_links:
         job = current_app.q.enqueue(generate_videos,
                                     str(video_file),
-                                    song["title"],
                                     link,
                                     str(download_dir),
-                                    current_app.config.get("FFMPEG_PATH"))
+                                    current_app.config.get("FFMPEG_PATH"),
+                                    **song)
         jobs.append(job.get_id())
     return jobs
 
