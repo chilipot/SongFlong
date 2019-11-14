@@ -6,8 +6,7 @@ services:
     build: .
     image: songflong
     container_name: songflong
-    entrypoint: python
-    command: run.py
+    command: uwsgi --ini songflong.ini
     ports:
       - '5000:5000'
     environment:
@@ -21,7 +20,7 @@ services:
   worker:
     build: .
     image: songflong
-    command: worker.py
+    command: python worker.py
     environment:
       - FFMPEG_PATH=/usr/bin/ffmpeg
     volumes: 
@@ -32,6 +31,9 @@ services:
   redis:
     image: redis
     container_name: redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
     ports:
       - "6379:6379"
 
