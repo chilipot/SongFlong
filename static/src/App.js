@@ -34,10 +34,15 @@ const App = () => {
                     >
                         Source Code
                     </a>
-                    {jobIds.map((id, index) => (
-                        <VideoContainer id={id} index={index} />
-                    ))}
                 </div>
+            </div>
+            <div className="videos container">
+                {jobIds.map((id, index) => (
+                    <VideoContainer id={id} index={index} />
+                ))}
+            </div>
+            <div className="footer">
+                        
             </div>
         </div>
     );

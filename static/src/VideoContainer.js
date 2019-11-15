@@ -4,7 +4,7 @@ import Request from 'axios-request-handler';
 import VideoPlayer from './VideoPlayer';
 
 const MetaContainer = ({ video, index, major = false }) => (
-    <div className={'title one-third column'}>
+    <div className={'title column'}>
         <img
             id={`art${index}`}
             src={
@@ -21,7 +21,7 @@ const MetaContainer = ({ video, index, major = false }) => (
 );
 
 const PlaybackContainer = ({ video, index, major = false }) => (
-    <div className={'video two-thirds column'}>
+    <div className={'video column'}>
         <VideoPlayer filepath={video.filepath} />
     </div>
 );
