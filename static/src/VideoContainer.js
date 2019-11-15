@@ -50,7 +50,7 @@ const VideoContainer = ({ id, index }) => {
         <MetaContainer video={video} index={index} />
     ];
     return (
-        <div className="row">
+        <div className="row" key={id}>
             {(major ? components : components.reverse()).map(
                 Component => Component
             )}
