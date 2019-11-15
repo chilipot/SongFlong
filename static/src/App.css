@@ -1,3 +1,7 @@
+.wrapper {
+    background-image: linear-gradient(mediumvioletred, blueviolet);
+}
+
 .container {
     position: relative;
     width: 100%;

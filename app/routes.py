@@ -5,10 +5,6 @@ from app import job_service
 JOBS = Blueprint('jobs', __name__)
 
 
-@JOBS.route('/')
-def index():
-    return "Hello, World!", 200
-
 @JOBS.route('/ping')
 def ping():
     return "pong", 200

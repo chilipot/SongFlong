@@ -8,8 +8,8 @@ import VideoContainer from './VideoContainer';
 const App = () => {
     const [jobIds, setJobIds] = useState([]);
     const search = song => {
+        setJobIds([]);
         const url = `${BASE_URL}/submit/${encodeURI(song)}`;
-
         console.log(url);
         fetch(url)
             .then(res => res.json())
@@ -41,9 +41,7 @@ const App = () => {
                     <VideoContainer id={id} index={index} />
                 ))}
             </div>
-            <div className="footer">
-                        
-            </div>
+            <div className="footer"></div>
         </div>
     );
 };
