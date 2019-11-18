@@ -5,10 +5,7 @@ from math import ceil
 import requests
 import logging
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('songflong_builder')
 
 
 def download_stream(video_url, itag, download_dir):
@@ -77,8 +74,9 @@ def download_audio_stream(url: str, download_dir: Path) -> Path:
     try:
         logger.info(f"Downloading audio stream -> {url}")
         return download_stream(url, 140, download_dir)
-    except:
+    except Exception as err:
         logger.error(f"Unable to find an audio stream for {url}")
+        logger.exception(err)
 
 
 def download_video_stream(url: str, download_dir: Path) -> Path:
@@ -96,5 +94,6 @@ def download_video_stream(url: str, download_dir: Path) -> Path:
     try:
         logger.info(f"Downloading video stream -> {url}")
         return download_stream(url, 135, download_dir)
-    except Exception as e:
+    except Exception as err:
         logger.error(f"Unable to find an video stream for {url}")
+        logger.exception(err)

@@ -1,0 +1,51 @@
+version: '3.3'
+
+services: 
+
+  songflong:
+    build: .
+    image: songflong
+    container_name: songflong
+    command: uwsgi --ini songflong.ini
+    ports:
+      - '5000:5000'
+    environment:
+      - FLASK_DEBUG=True
+      - FFMPEG_PATH=/usr/bin/ffmpeg
+    volumes: 
+      - temp:/songflong/temp
+    depends_on: 
+      - redis
+
+  worker:
+    build: .
+    image: songflong
+    command: python worker.py
+    environment:
+      - FFMPEG_PATH=/usr/bin/ffmpeg
+    volumes: 
+      - temp:/songflong/temp
+    depends_on: 
+      - redis
+  
+  redis:
+    image: redis
+    container_name: redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    image: dashboard
+    container_name: dashboard
+    ports:
+      - '9181:9181'
+    command: rq-dashboard -H redis
+
+volumes:
+  temp:

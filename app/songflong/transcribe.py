@@ -12,10 +12,12 @@ def setup_download_dir():
     return download_dir
 
 
-def transcribe_video(video_file: Path, audio_file: Path, download_dir: Path) -> Path:
+def transcribe_video(video_file: Path, audio_file: Path, download_dir: Path, ffmpeg_path: str) -> Path:
     """
     Transcribes the audio to the video and outputs a file.
 
+    :param ffmpeg_path: FFMPEG PATH
+    :type ffmpeg_path: str
     :param video_file: The base video stream
     :type video_file: Path
     :param audio_file: The downloaded audio stream
@@ -24,14 +26,14 @@ def transcribe_video(video_file: Path, audio_file: Path, download_dir: Path) -> 
     :type download_dir: Path
     """
     output = download_dir / f"output-{uuid.uuid4()}.mp4"
-    ffmpeg_merge_video_audio(video_file, audio_file, output)
+    ffmpeg_merge_video_audio(video_file, audio_file, output, ffmpeg_path)
     return output
 
 
-def generate_videos(video_file, title, link, download_dir):
+def generate_videos(video_file, link, download_dir, ffmpeg_path, **kwargs):
     download_dir = Path(download_dir)
     video_file = Path(video_file)
     audio_file = download_audio_stream(link, download_dir)
-    finished_video = transcribe_video(video_file, audio_file, download_dir)
+    finished_video = transcribe_video(video_file, audio_file, download_dir, ffmpeg_path)
     print(f"******FINISHED TRANSCRIBING*****")
-    return finished_video
+    return {"filepath": str(finished_video.name), **kwargs}

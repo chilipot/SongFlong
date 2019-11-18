@@ -1,0 +1,282 @@
+.wrapper {
+    background-image: linear-gradient(mediumvioletred, blueviolet);
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.videos {
+    width: 90%;
+    margin: auto;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-gap: 5vw;
+    padding: 5vw 0;
+}
+
+.column {
+    display: block;
+    grid-row: 1;
+}
+
+.title img {
+    margin-top: 5vh;
+}
+
+video {
+    display: block;
+    width: 100%;
+    background-color: #191919;
+}
+
+.title {
+    display: block;
+    background-color: #191919;
+    box-shadow: 0px 0px 50px black;
+    grid-column: 1 / span 1;
+}
+
+.video {
+    grid-column: 2 / span 2;
+    display: block;
+    box-shadow: 0px 0px 50px black;
+}
+
+.row:nth-child(even) .title {
+    grid-column: 3 / span 1;
+}
+
+.row:nth-child(even) .video {
+    grid-column: 1 / span 2;
+}
+
+.searchbar input {
+    line-height: 50px;
+    padding: 0 20px;
+    width: 40vw;
+    font-size: 16px;
+    border-radius: 5px;
+    border-color: rgb(211, 211, 211);
+    background-color: rgb(250, 250, 250);
+    color: blueviolet;
+}
+
+.searchbar {
+    width: 50vw;
+    margin: auto;
+}
+
+.searchbar input:hover {
+    border-color: mediumvioletred;
+    border-width: 2px;
+}
+
+.searchbar input:focus {
+    border-color: mediumvioletred;
+    border-width: 2px;
+}
+
+h1 {
+    font-family: 'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+        'Helvetica Neue', Arial, sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 700;
+    line-height: 26.4px;
+}
+
+h3 {
+    font-family: 'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+        'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 700;
+}
+
+a,
+p,
+input {
+    font-family: 'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+        'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+blockquote {
+    font-family: 'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+        'Helvetica Neue', Arial, sans-serif;
+    font-size: 21px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    line-height: 30px;
+}
+
+pre {
+    font-family: 'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+        'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    line-height: 18.5714px;
+}
+
+div.header {
+    background-color: #191919;
+    height: 98vh;
+    width: 100%;
+}
+
+div.footer {
+    display: block;
+    height: 10vw;
+    background-color: #191919;
+    width: 100%;
+}
+
+body {
+    margin: 0px;
+    color: white;
+    text-align: center;
+    overflow-x: hidden;
+}
+
+img {
+    align-self: center;
+}
+
+h1 {
+    font-size: 5rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+img#hum {
+    height: 9vh;
+}
+
+.jumbotron {
+    position: relative;
+    display: block;
+    top: 20%;
+}
+
+form {
+    width: 60vh;
+    margin: auto;
+    margin-top: 40px;
+}
+
+input {
+    display: inline;
+    position: relative;
+}
+
+span {
+    text-align: center;
+}
+
+#url {
+    width: 50vh;
+    height: 6vh;
+    background-color: black;
+    opacity: 0.5;
+    border: none;
+    float: left;
+    color: white;
+    padding-left: 20px;
+}
+
+#submit {
+    width: 10vh;
+    height: 6vh;
+    border: none;
+    color: white;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+#git {
+    text-decoration: none;
+    color: white;
+    font-size: 1.2rem;
+    top: 3rem;
+    position: relative;
+}
+
+.lds-facebook {
+    display: inline-block;
+    position: relative;
+    width: 160px;
+    height: 64px;
+    margin: auto;
+}
+.lds-facebook div {
+    display: inline-block;
+    position: absolute;
+    left: 6px;
+    width: 13px;
+    background: #fff;
+    animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+.lds-facebook div:nth-child(1) {
+    left: 6px;
+    animation-delay: -0.24s;
+}
+.lds-facebook div:nth-child(2) {
+    left: 26px;
+    animation-delay: -0.12s;
+}
+.lds-facebook div:nth-child(3) {
+    left: 45px;
+    animation-delay: 0;
+}
+.lds-facebook div:nth-child(4) {
+    left: 64px;
+    animation-delay: 0.12s;
+}
+.lds-facebook div:nth-child(5) {
+    left: 82px;
+    animation-delay: 0.24s;
+}
+.lds-facebook div:nth-child(6) {
+    left: 101px;
+    animation-delay: 0.36s;
+}
+.lds-facebook div:nth-child(7) {
+    left: 120px;
+    animation-delay: 0.48s;
+}
+.lds-facebook div:nth-child(8) {
+    left: 140px;
+    animation-delay: 0.6s;
+}
+@keyframes lds-facebook {
+    0% {
+        top: 6px;
+        height: 51px;
+    }
+    50%,
+    100% {
+        top: 19px;
+        height: 26px;
+    }
+}
