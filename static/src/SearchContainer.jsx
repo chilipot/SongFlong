@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import './App.css';
 import { BASE_URL } from './utils/API';
 
-const Loading = (status) => {
+const Loading = status => {
     console.log(status);
     if (status.status) {
         return (
-            <div className='lds-facebook'>
+            <div className="lds-facebook">
                 <div></div>
                 <div></div>
                 <div></div>
@@ -16,23 +16,23 @@ const Loading = (status) => {
                 <div></div>
                 <div></div>
             </div>
-        )
+        );
     } else {
-        return(<div></div>)
+        return <div></div>;
     }
-}
+};
 
 const SearchContainer = ({ setJobIds }) => {
-    const [status, setStatus] = useState({'value': false});
+    const [status, setStatus] = useState({ value: false });
     const search = song => {
-        setStatus({'value': true});
+        setStatus({ value: true });
         setJobIds([]);
         const url = `${BASE_URL}/submit/${encodeURI(song)}`;
         console.log(url);
         fetch(url)
             .then(res => res.json())
             .then(json => setJobIds(json.job_ids))
-            .then(() => setStatus({'value': false}));
+            .then(() => setStatus({ value: false }));
     };
     return (
         <div className="searchbar">
@@ -45,7 +45,7 @@ const SearchContainer = ({ setJobIds }) => {
                     }
                 }}
             />
-            <Loading status={status.value}/>
+            <Loading status={status.value} />
         </div>
     );
 };

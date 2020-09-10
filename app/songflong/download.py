@@ -8,18 +8,14 @@ import logging
 logger = logging.getLogger('songflong_builder')
 
 
-def download_stream(video_url, itag, download_dir):
+def download_stream(video_url: str, itag: int, download_dir: Path):
     """
     Downloads the stream by separating it into multiple chunks.
 
     :param video_url: The YouTube link
-    :type video_url: str
     :param itag: YouTube's stream format code
-    :type itag: int
     :param download_dir: The Path of the download directory
-    :type download_dir: Path
     """
-
     CHUNK_SIZE = 3 * 2**20  # bytes
     stream = YouTube(video_url).streams.get_by_itag(itag)
     filename = download_dir / f"{stream.type}-{stream.default_filename}.mp4"
@@ -37,7 +33,6 @@ def download_stream(video_url, itag, download_dir):
     with open(filename, 'wb') as outfile:
         for chunk in chunks:
             outfile.write(chunk)
-    print(filename)
     return Path(filename)
 
 

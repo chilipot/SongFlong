@@ -22,12 +22,16 @@ const App = () => {
             </div>
             <div className="videos container">
                 {jobIds.map((id, index) => (
-                    <VideoContainer id={id} index={index}/>
+                    <VideoContainer id={id} index={index} />
                 ))}
             </div>
             <div className="footer">
-
-            <a id="git" href="https://github.com/skylers27/Sound-Repo-Thing">Source Code</a>
+                <a
+                    id="git"
+                    href="https://github.com/skylers27/Sound-Repo-Thing"
+                >
+                    Source Code
+                </a>
             </div>
         </div>
     );
