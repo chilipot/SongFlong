@@ -1,6 +1,6 @@
 from flask import jsonify, Blueprint, send_from_directory, current_app
 
-from app import job_service
+from app.services import JobService
 
 JOBS = Blueprint('jobs', __name__)
 
@@ -12,7 +12,7 @@ def ping():
 
 @JOBS.route('/submit/<string:song_name>')
 def submit(song_name):
-    jobs = job_service.setup_jobs(song_name)
+    jobs = JobService.init_jobs(song_name)
     if jobs:
         return jsonify(job_ids=jobs)
     else:
@@ -21,7 +21,7 @@ def submit(song_name):
 
 @JOBS.route('/results/<string:job_id>')
 def results(job_id):
-    job = job_service.get_job(job_id)
+    job = JobService.get_job(job_id)
 
     if job.is_failed:
         return {"status": 'Job has failed!'}, 400

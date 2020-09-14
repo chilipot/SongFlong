@@ -1,9 +1,13 @@
-import jsonpickle
+import enum
 import os
 from abc import ABC
-from dataclasses import dataclass
-from typing import List, Union, Tuple
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import List, Union, Tuple, Optional
 
+import jsonpickle
+
+from app.songflong.download import StreamType
 from app.songflong.utils import GetSongBPMAPI, IMVDBAPI
 
 getsongbpm_api = GetSongBPMAPI(os.getenv('GETSONGBPM_API_KEY'))
@@ -16,7 +20,7 @@ class BaseModel(ABC):
 
     @classmethod
     def deserialize(cls, obj):
-        return jsonpickle.deserialize(obj)
+        return jsonpickle.decode(obj)
 
 
 @dataclass
@@ -31,10 +35,35 @@ class Artist(BaseModel):
     img_url: str = None
 
 
+class FileType(enum.Enum):
+    AUDIO_ARTIFACT = 'AUDIO_ARTIFACT'
+    VIDEO_ARTIFACT = 'VIDEO_ARTIFACT'
+    GENERATED_VIDEO = 'GENERATED_VIDEO'
+
+
+@dataclass
+class SongFile(BaseModel):
+    file_type: FileType
+    file_path: Path
+
+
 @dataclass
 class Video(BaseModel):
     url: str
     img_url: str = None
+    files: List[SongFile] = field(default_factory=list)
+
+    @property
+    def audio_artifact_files(self) -> List[SongFile]:
+        return [f for f in self.files if f.file_type is FileType.AUDIO_ARTIFACT]
+
+    @property
+    def video_artifact_file(self) -> Optional[SongFile]:
+        return next((f for f in self.files if f.file_type is FileType.VIDEO_ARTIFACT), None)
+
+    @property
+    def generated_video_file(self) -> Optional[SongFile]:
+        return next((f for f in self.files if f.file_type is FileType.GENERATED_VIDEO), None)
 
 
 @dataclass
@@ -164,3 +193,8 @@ class Song(BaseModel):
             results = getsongbpm_api.related_songs_by_tempo(self.bpm)
             self._related_songs_by_tempo = [self._from_getsongbpm(result) for result in results['tempo']]
         return self._related_songs_by_tempo
+
+    def save_file(self, file_path: Path, file_type: FileType):
+        video = self.video
+        self._video = Video(url=video.url, img_url=video.img_url,
+                            files=[*video.files, SongFile(file_path=file_path, file_type=file_type)])

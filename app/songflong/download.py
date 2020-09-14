@@ -1,94 +1,85 @@
-from pytube import YouTube
-from pathlib import Path
-import multiprocessing as mp
-from math import ceil
-import requests
 import logging
+import multiprocessing as mp
+from abc import ABC
+from functools import partial
+from math import ceil
+from pathlib import Path
+from typing import Optional
+
+import requests
+from pytube import YouTube, Stream
+
+from app.songflong.models import FileType
 
 logger = logging.getLogger('songflong_builder')
 
 
-def download_stream(video_url: str, itag: int, download_dir: Path):
-    """
-    Downloads the stream by separating it into multiple chunks.
+class YTStreamDownloadAPI(ABC):
+    BYTES_TO_MB = 2 ** 20
+    DEFAULT_CHUNK_SIZE = 5 * BYTES_TO_MB
 
-    :param video_url: The YouTube link
-    :param itag: YouTube's stream format code
-    :param download_dir: The Path of the download directory
-    """
-    CHUNK_SIZE = 3 * 2**20  # bytes
-    stream = YouTube(video_url).streams.get_by_itag(itag)
-    filename = download_dir / f"{stream.type}-{stream.default_filename}.mp4"
-    url = stream.url
-    filesize = stream.filesize
+    def __init__(self, stream_type: FileType):
+        self.stream_type = stream_type
 
-    ranges = [[url, i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE - 1]
-              for i in range(ceil(filesize / CHUNK_SIZE))]
-    # Last range must be to the end of file, so it will be marked as None.
-    ranges[-1][2] = None
+    def download(self, song: 'Song', download_dir: Path) -> Path:
+        """
+        Downloads a stream to a file from a YouTube link to the given directory.
+        """
+        try:
+            logger.info(f"Downloading {self.stream_type.name.lower()} stream -> {song.video.url}")
+            file_path = self.download_stream(song.video.url, download_dir)
+            song.save_file(file_path, self.stream_type)
+            return file_path
+        except Exception as err:
+            logger.error(f"Unable to find an {self.stream_type.name.lower()} stream -> {song.video.url}")
+            logger.exception(err)
 
-    pool = mp.Pool(min(len(ranges), 64))
-    chunks = pool.map(download_chunk, ranges)
+    def get_stream(self, video_url: str) -> Optional[Stream]:
+        stream_query = YouTube(video_url).streams.filter(adaptive=True)
+        if self.stream_type is FileType.AUDIO_ARTIFACT:
+            return stream_query.get_audio_only(subtype='mp3')
+        elif self.stream_type is FileType.VIDEO_ARTIFACT:
+            return stream_query.filter(only_video=True).order_by('res').first()
+        else:
+            return None
 
-    with open(filename, 'wb') as outfile:
-        for chunk in chunks:
-            outfile.write(chunk)
-    return Path(filename)
+    def download_stream(self, yt_url: str, download_dir: Path) -> Path:
+        """
+        Downloads the stream for the given youtube URL by separating it into multiple chunks.
+        """
+        stream = self.get_stream(yt_url)
+        filename = download_dir / stream.default_filename
+        url = stream.url
+        filesize = stream.filesize
 
+        ranges = [[url, i * self.DEFAULT_CHUNK_SIZE, (i + 1) * self.DEFAULT_CHUNK_SIZE - 1]
+                  for i in range(ceil(filesize / self.DEFAULT_CHUNK_SIZE))]
+        # Last range must be to the end of file, so it will be marked as None.
+        ranges[-1][2] = None
 
-def download_chunk(args):
-    """
-    Requests a chunk of the file to be downloaded.
+        pool = mp.Pool(min(len(ranges), 10))
+        chunks = pool.map(partial(self.download_chunk, *ranges))
 
-    :param args: The chunk start and finish
-    :type args: tuple
-    :returns: The data from the get request
-    """
-    url, start, finish = args
-    range_string = '{}-'.format(start)
+        with open(filename, 'wb') as outfile:
+            for chunk in chunks:
+                outfile.write(chunk)
+        return Path(filename)
 
-    if finish is not None:
-        range_string += str(finish)
-
-    response = requests.get(url, headers={'Range': 'bytes=' + range_string})
-    return response.content
-
-
-def download_audio_stream(url: str, download_dir: Path) -> Path:
-    """
-    Downloads the audio of the YouTube link to the given directory.
-
-    :param url: A YouTube link
-    :type url: str
-    :param download_dir: The directory to download the stream to
-    :type download_dir: Path
-    :returns: The Path of the downloaded audio stream
-    :rtype: Path
-    """
-
-    try:
-        logger.info(f"Downloading audio stream -> {url}")
-        return download_stream(url, 140, download_dir)
-    except Exception as err:
-        logger.error(f"Unable to find an audio stream for {url}")
-        logger.exception(err)
+    @classmethod
+    def download_chunk(cls, url: str, start: int, finish: int = None) -> bytes:
+        """
+        Requests a chunk of the file to be downloaded.
+        """
+        range_string = f"{start}-{finish if finish is not None else ''}"
+        response = requests.get(url, headers={'Range': 'bytes=' + range_string})
+        return response.content
 
 
-def download_video_stream(url: str, download_dir: Path) -> Path:
-    """
-    Downloads the video of the YouTube link to the given directory.
+class AudioYTStreamDownloadAPI(YTStreamDownloadAPI):
+    def __init__(self):
+        super().__init__(FileType.AUDIO_ARTIFACT)
 
-    :param url: A YouTube link
-    :type url: str
-    :param download_dir: The directory to download the stream to
-    :type download_dir: Path
-    :returns: The Path of the downloaded video stream
-    :rtype: Path
-    """
 
-    try:
-        logger.info(f"Downloading video stream -> {url}")
-        return download_stream(url, 135, download_dir)
-    except Exception as err:
-        logger.error(f"Unable to find an video stream for {url}")
-        logger.exception(err)
+class VideoYTStreamDownloadAPI(YTStreamDownloadAPI):
+    def __init__(self):
+        super().__init__(FileType.VIDEO_ARTIFACT)

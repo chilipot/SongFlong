@@ -1,10 +1,24 @@
 from abc import ABC
 from concurrent import futures
 from functools import partial
-from typing import List, Tuple
+from typing import Callable, List, Tuple
 from urllib.parse import quote_plus
 
+import jsonpickle
 import requests
+from flask import current_app
+
+
+class QueueAPI:
+    @staticmethod
+    def decoded_args_func(func, encoded_args):
+        decoded_args = jsonpickle.decode(encoded_args)
+        return func(*decoded_args['args'], **decoded_args['kwargs'])
+
+    @classmethod
+    def enqueue(cls, func: Callable, *args, **kwargs):
+        return current_app.q.enqueue(partial(cls.decoded_args_func, func),
+                                     jsonpickle.encode({'args': args, 'kwargs': kwargs}, unpicklable=True))
 
 
 class UtilityAPI(ABC):
