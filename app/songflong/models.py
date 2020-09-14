@@ -1,13 +1,12 @@
 import enum
 import os
 from abc import ABC
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Union, Tuple, Optional
 
 import jsonpickle
 
-from app.songflong.download import StreamType
 from app.songflong.utils import GetSongBPMAPI, IMVDBAPI
 
 getsongbpm_api = GetSongBPMAPI(os.getenv('GETSONGBPM_API_KEY'))
@@ -51,32 +50,12 @@ class SongFile(BaseModel):
 class Video(BaseModel):
     url: str
     img_url: str = None
-    files: List[SongFile] = field(default_factory=list)
-
-    @property
-    def audio_artifact_files(self) -> List[SongFile]:
-        return [f for f in self.files if f.file_type is FileType.AUDIO_ARTIFACT]
-
-    @property
-    def video_artifact_file(self) -> Optional[SongFile]:
-        return next((f for f in self.files if f.file_type is FileType.VIDEO_ARTIFACT), None)
-
-    @property
-    def generated_video_file(self) -> Optional[SongFile]:
-        return next((f for f in self.files if f.file_type is FileType.GENERATED_VIDEO), None)
-
-
-@dataclass
-class Test(BaseModel):
-    album: Album
-    video: Video
-    artist: Artist
-    x: List[Artist]
 
 
 class Song(BaseModel):
     def __init__(self, title: str, artist: Artist = None, _album: Album = None, _bpm: int = None, _imvdb_id: int = None,
-                 _getsongbpm_id: str = None, _video: Video = None, _related_songs_by_tempo: List['Song'] = None):
+                 _getsongbpm_id: str = None, _video: Video = None, _related_songs_by_tempo: List['Song'] = None,
+                 files: List[SongFile] = None):
         self.title = title
         self.artist = artist
         self._album = _album
@@ -85,6 +64,7 @@ class Song(BaseModel):
         self._getsongbpm_id = _getsongbpm_id
         self._related_songs_by_tempo = _related_songs_by_tempo
         self._video = _video
+        self.files = files or []
 
     def finish_loading(self):
         if self._imvdb_id is None and self._getsongbpm_id is not None:
@@ -194,7 +174,17 @@ class Song(BaseModel):
             self._related_songs_by_tempo = [self._from_getsongbpm(result) for result in results['tempo']]
         return self._related_songs_by_tempo
 
+    @property
+    def audio_artifact_files(self) -> List[SongFile]:
+        return [f for f in self.files if f.file_type is FileType.AUDIO_ARTIFACT]
+
+    @property
+    def video_artifact_file(self) -> Optional[SongFile]:
+        return next((f for f in self.files if f.file_type is FileType.VIDEO_ARTIFACT), None)
+
+    @property
+    def generated_video_file(self) -> Optional[SongFile]:
+        return next((f for f in self.files if f.file_type is FileType.GENERATED_VIDEO), None)
+
     def save_file(self, file_path: Path, file_type: FileType):
-        video = self.video
-        self._video = Video(url=video.url, img_url=video.img_url,
-                            files=[*video.files, SongFile(file_path=file_path, file_type=file_type)])
+        self.files.append(SongFile(file_path=file_path, file_type=file_type))

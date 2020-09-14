@@ -4,7 +4,7 @@ import uuid
 from pathlib import Path
 
 from app.songflong.download import AudioYTStreamDownloadAPI
-from app.songflong.models import FileType
+from app.songflong.models import FileType, Song
 
 logger = logging.getLogger('songflong_builder')
 
@@ -56,7 +56,7 @@ def transcribe_video(video_file: Path, audio_file: Path, download_dir: Path, ffm
 
 def generate_videos(song: 'Song', download_dir: Path, ffmpeg_path: Path):
     download_dir = Path(download_dir)
-    video_file = Path(song.video.video_artifact_file)
+    video_file = Path(song.video_artifact_file.file_path)
     audio_file_path = AudioYTStreamDownloadAPI().download(song, download_dir)
     finished_video = transcribe_video(video_file, audio_file_path, download_dir, ffmpeg_path)
     song.save_file(finished_video, FileType.GENERATED_VIDEO)

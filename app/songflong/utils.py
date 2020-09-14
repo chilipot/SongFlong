@@ -1,28 +1,38 @@
 from abc import ABC
 from concurrent import futures
 from functools import partial
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, Any
 from urllib.parse import quote_plus
 
 import jsonpickle
 import requests
 from flask import current_app
+from rq import Queue
+from rq.job import Job
 
 
 class QueueAPI:
     @staticmethod
-    def decoded_args_func(func, encoded_args):
+    def decoded_args_func(func: Callable, encoded_args: str) -> Any:
         decoded_args = jsonpickle.decode(encoded_args)
         return func(*decoded_args['args'], **decoded_args['kwargs'])
 
     @classmethod
-    def enqueue(cls, func: Callable, *args, **kwargs):
-        return current_app.q.enqueue(partial(cls.decoded_args_func, func),
-                                     jsonpickle.encode({'args': args, 'kwargs': kwargs}, unpicklable=True))
+    def queue(cls) -> Queue:
+        return current_app.q
+
+    @classmethod
+    def enqueue(cls, func: Callable, *args, **kwargs) -> Job:
+        return cls.queue().enqueue(partial(cls.decoded_args_func, func),
+                                   jsonpickle.encode({'args': args, 'kwargs': kwargs}, unpicklable=True))
+
+    @classmethod
+    def get(cls, job_id: int) -> Job:
+        return cls.queue().fetch_job(job_id)
 
 
 class UtilityAPI(ABC):
-    def __init__(self, base_url):
+    def __init__(self, base_url: str):
         self.base_url = base_url
 
     def inject_in_params(self, in_params):
@@ -31,7 +41,7 @@ class UtilityAPI(ABC):
     def inject_in_headers(self, in_headers):
         return in_headers
 
-    def request(self, url, method='get', params=None, body=None, headers=None, **kwargs):
+    def request(self, url: str, method: str = 'get', params=None, body=None, headers=None, **kwargs):
         """
         Requests wrapper with error handling
         :param url: URL to make request
@@ -63,7 +73,7 @@ class UtilityAPI(ABC):
 
 
 class GetSongBPMAPI(UtilityAPI):
-    def __init__(self, api_key):
+    def __init__(self, api_key: str):
         self.api_key = api_key
         super().__init__("https://api.getsongbpm.com")
 
@@ -97,7 +107,7 @@ class GetSongBPMAPI(UtilityAPI):
 
 
 class IMVDBAPI(UtilityAPI):
-    def __init__(self, api_key):
+    def __init__(self, api_key: str):
         self.api_key = api_key
         super().__init__("https://imvdb.com/api/v1")
 

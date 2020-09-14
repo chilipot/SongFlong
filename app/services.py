@@ -6,6 +6,7 @@ from flask import current_app
 from rq.job import Job
 
 from app.songflong.download import VideoYTStreamDownloadAPI
+from app.songflong.models import Song
 from app.songflong.transcribe import setup_download_dir, generate_videos
 from app.songflong.utils import QueueAPI
 
@@ -18,7 +19,7 @@ class JobService:
     def init_jobs(cls, song: 'Song') -> Optional[List[int]]:
         download_dir = setup_download_dir()
         video_file = VideoYTStreamDownloadAPI().download(song, download_dir)
-        if song.video.video_artifact_file is None:
+        if song.video_artifact_file is None:
             logger.error(f"Cancelling request since no video stream could be found for {song.video.url}")
             return None
         logger.info(f"Video Submission using {song.video.url}: {video_file}")
@@ -35,4 +36,4 @@ class JobService:
 
     @classmethod
     def get_job(cls, job_id: int) -> Job:
-        return current_app.q.fetch_job(job_id)
+        return QueueAPI.get(job_id)
