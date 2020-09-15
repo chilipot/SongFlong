@@ -19,6 +19,8 @@ class BaseModel(ABC):
 
     @classmethod
     def deserialize(cls, obj):
+        if not isinstance(obj, str):
+            obj = jsonpickle.dumps(obj, unpicklable=False)
         return jsonpickle.decode(obj)
 
 
@@ -115,7 +117,7 @@ class Song(BaseModel):
             self.artist = Artist(name=obj['artists'][0]['name'])
 
     @classmethod
-    def search(cls, query: Union[str, Tuple[str, str]]) -> List['Song']:
+    def search(cls, query: Union[str, Tuple[str, str]], fully_loaded=False) -> List['Song']:
         # Only the first page of search results
         results = []
         converter = cls._from_getsongbpm
@@ -131,7 +133,10 @@ class Song(BaseModel):
         out = []
         for result in results:
             try:
-                out.append(converter(result))
+                converted_result = converter(result)
+                if fully_loaded:
+                    converted_result.finish_loading()
+                out.append(converted_result)
             except Exception as e:
                 print(e)
         return out

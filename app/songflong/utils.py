@@ -6,9 +6,14 @@ from urllib.parse import quote_plus
 
 import jsonpickle
 import requests
-from flask import current_app
+from flask import current_app, Response
 from rq import Queue
 from rq.job import Job
+
+
+def responsify(data):
+    serialized_data = jsonpickle.encode(data, unpicklable=True)
+    return Response(serialized_data, mimetype='application/json')
 
 
 class QueueAPI:
@@ -116,7 +121,7 @@ class IMVDBAPI(UtilityAPI):
         return in_headers
 
     def video_search(self, query: str):
-        return self.request('/search/videos', params={'q': quote_plus(query)})
+        return self.request('/search/videos', params={'q': query})
 
     def multi_video_search(self, queries: List[str]):
         return self.concurrent_requests([partial(self.video_search, query) for query in queries])
