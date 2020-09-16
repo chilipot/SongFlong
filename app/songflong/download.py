@@ -1,6 +1,8 @@
 import logging
 import multiprocessing as mp
 from abc import ABC
+from concurrent.futures.process import ProcessPoolExecutor
+from concurrent.futures.thread import ThreadPoolExecutor
 from functools import partial
 from math import ceil
 from pathlib import Path
@@ -37,9 +39,9 @@ class YTStreamDownloadAPI(ABC):
     def get_stream(self, video_url: str) -> Optional[Stream]:
         stream_query = YouTube(video_url).streams.filter(adaptive=True)
         if self.stream_type is FileType.AUDIO_ARTIFACT:
-            return stream_query.get_audio_only(subtype='mp3')
+            return stream_query.get_audio_only()
         elif self.stream_type is FileType.VIDEO_ARTIFACT:
-            return stream_query.filter(only_video=True).order_by('res').first()
+            return stream_query.filter(only_video=True, subtype='mp4').order_by('resolution').desc().first()
         else:
             return None
 
@@ -48,7 +50,7 @@ class YTStreamDownloadAPI(ABC):
         Downloads the stream for the given youtube URL by separating it into multiple chunks.
         """
         stream = self.get_stream(yt_url)
-        filename = download_dir / stream.default_filename
+        filename = download_dir / f"{stream.default_filename}-{self.stream_type}"
         url = stream.url
         filesize = stream.filesize
 
@@ -56,17 +58,17 @@ class YTStreamDownloadAPI(ABC):
                   for i in range(ceil(filesize / self.DEFAULT_CHUNK_SIZE))]
         # Last range must be to the end of file, so it will be marked as None.
         ranges[-1][2] = None
-
-        pool = mp.Pool(min(len(ranges), 10))
-        chunks = pool.map(partial(self.download_chunk, *ranges))
+        args = zip(*ranges)
+        with ThreadPoolExecutor() as pool:
+            chunks = pool.map(self.download_chunk, *args)
 
         with open(filename, 'wb') as outfile:
             for chunk in chunks:
                 outfile.write(chunk)
         return Path(filename)
 
-    @classmethod
-    def download_chunk(cls, url: str, start: int, finish: int = None) -> bytes:
+    @staticmethod
+    def download_chunk(url: str, start: int, finish: int = None) -> bytes:
         """
         Requests a chunk of the file to be downloaded.
         """

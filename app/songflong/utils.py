@@ -28,8 +28,10 @@ class QueueAPI:
 
     @classmethod
     def enqueue(cls, func: Callable, *args, **kwargs) -> Job:
-        return cls.queue().enqueue(partial(cls.decoded_args_func, func),
-                                   jsonpickle.encode({'args': args, 'kwargs': kwargs}, unpicklable=True))
+        task = partial(cls.decoded_args_func, func)
+        task.__name__ = cls.decoded_args_func.__name__
+        task.__module__ = cls.decoded_args_func.__module__
+        return cls.queue().enqueue(task, jsonpickle.encode({'args': args, 'kwargs': kwargs}, unpicklable=True))
 
     @classmethod
     def get(cls, job_id: int) -> Job:

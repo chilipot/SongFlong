@@ -45,7 +45,7 @@ class FileType(enum.Enum):
 @dataclass
 class SongFile(BaseModel):
     file_type: FileType
-    file_path: Path
+    file_path: str
 
 
 @dataclass
@@ -192,4 +192,4 @@ class Song(BaseModel):
         return next((f for f in self.files if f.file_type is FileType.GENERATED_VIDEO), None)
 
     def save_file(self, file_path: Path, file_type: FileType):
-        self.files.append(SongFile(file_path=file_path, file_type=file_type))
+        self.files.append(SongFile(file_path=str(file_path), file_type=file_type))
