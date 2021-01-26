@@ -1,51 +1,48 @@
 import React, { useState } from 'react';
 import './App.css';
-import { BASE_URL } from './utils/API';
+import API from './utils/API';
+import LoadingBar from './utils/LoadingBar';
 
-const Loading = (status) => {
-    console.log(status);
-    if (status.status) {
-        return (
-            <div className='lds-facebook'>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
-        )
-    } else {
-        return(<div></div>)
-    }
-}
-
-const SearchContainer = ({ setJobIds }) => {
-    const [status, setStatus] = useState({'value': false});
-    const search = song => {
-        setStatus({'value': true});
-        setJobIds([]);
-        const url = `${BASE_URL}/submit/${encodeURI(song)}`;
-        console.log(url);
-        fetch(url)
-            .then(res => res.json())
-            .then(json => setJobIds(json.job_ids))
-            .then(() => setStatus({'value': false}));
+const SearchBar = ({ setLoading, setResults }) => {
+    const [query, setQuery] = useState('');
+    const search = () => {
+        setLoading(true);
+        API.get('/search', { params: { query: query } }).then(res => {
+            setResults(res.data.results);
+            setLoading(false);
+        });
     };
     return (
+        <input
+            placeholder="Music Video Search..."
+            type="text"
+            onKeyPress={e => {
+                if (e.key === 'Enter' && query.length >= 3) {
+                    search();
+                }
+            }}
+            onChange={e => setQuery(e.target.value)}
+        />
+    );
+};
+
+const SearchContainer = ({ setPrimary }) => {
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const setResultsComplex = inResults => {
+        setResults(inResults);
+        console.log('results');
+        console.log(results);
+        console.log(inResults);
+        // TODO: Implement Choosing
+        setPrimary(inResults[0]);
+    };
+
+    return (
         <div className="searchbar">
-            <input
-                placeholder="Youtube Search..."
-                type="text"
-                onKeyPress={e => {
-                    if (e.key === 'Enter') {
-                        search(e.target.value);
-                    }
-                }}
-            />
-            <Loading status={status.value}/>
+            <SearchBar setLoading={setLoading} setResults={setResultsComplex} />
+            <LoadingBar status={loading} />
         </div>
     );
 };

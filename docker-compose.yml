@@ -1,6 +1,26 @@
 version: '3.3'
 
-services: 
+services:
+  ui-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev.react
+    container_name: ui-dev
+    volumes:
+      - ./static:/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - COMPOSE_CONVERT_WINDOWS_PATHS=true
+    ports:
+      - '3000:3000'
+
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.react
+    container_name: ui
+    ports:
+      - '80:80'
 
   songflong:
     build: .
@@ -12,6 +32,7 @@ services:
     environment:
       - FLASK_DEBUG=True
       - FFMPEG_PATH=/usr/bin/ffmpeg
+      - COMPOSE_CONVERT_WINDOWS_PATHS=true
     volumes: 
       - temp:/songflong/temp
     depends_on: 
@@ -23,8 +44,10 @@ services:
     command: python worker.py
     environment:
       - FFMPEG_PATH=/usr/bin/ffmpeg
+      - COMPOSE_CONVERT_WINDOWS_PATHS=true
     volumes: 
-      - temp:/songflong/temp
+      - ./temp:/songflong/temp
+      - ./app:/songflong/app
     depends_on: 
       - redis
   
