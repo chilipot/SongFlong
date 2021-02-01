@@ -45,7 +45,7 @@ func getSpotifyClient() spotify.Client {
 }
 
 func getFireStoreClient() *firestore.Client {
-	opt := option.WithCredentialsFile("C:\\Users\\dangu\\Downloads\\songflong-b0388-firebase-adminsdk-ko8re-4fdb7f040f.json")
+	opt := option.WithCredentialsFile(os.Getenv("GOOGLE_SERVICE_KEY"))
 	ctx := context.Background()
 	client, err := firestore.NewClient(ctx, "songflong-b0388", opt)
 	if err != nil {
