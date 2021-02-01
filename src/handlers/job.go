@@ -4,11 +4,17 @@ import (
 	"github.com/chilipot/songflong/src/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/zmb3/spotify"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
 )
+
+var Itags = map[string][]int{
+	"video": {133, 134, 135, 136, 137},
+	"audio": {139, 140, 141},
+}
 
 type SongBPMResponse struct {
 	Songs []struct {
@@ -53,18 +59,19 @@ func _download(api *models.ExternalAPI, youtubeId string, mimeType string) {
 		panic(err)
 	}
 	var resp *http.Response
-	for _, format := range video.Formats {
-		if format.MimeType == mimeType+"/mp4" && format.AudioChannels == 0 {
-			resp, err = api.YouTube.GetStream(video, &format)
-			if err != nil {
-				panic(err)
-			}
-			break
+
+	for _, tag := range Itags[mimeType] {
+		format := video.Formats.FindByItag(tag)
+		if format == nil {
+			continue
 		}
+		resp, err = api.YouTube.GetStream(video, format)
+		if err != nil {
+			panic(err)
+		}
+		break
 	}
-	if resp == nil {
-		return
-	}
+
 	defer resp.Body.Close()
 	file, err := os.Create(youtubeId + "-" + mimeType + ".mp4")
 	if err != nil {
@@ -104,6 +111,8 @@ func SubmitJob(api *models.ExternalAPI, context *gin.Context) {
 }
 
 func GetJob(api *models.ExternalAPI, context *gin.Context) {
-	//jobId := context.Param("jobId")
+	jobId := context.Param("jobId")
+	sourceTrack := api.GetTrack(spotify.ID(jobId))
+	sharedTracks := findSongsByTempo(api, sourceTrack.Tempo)
 	context.JSON(http.StatusOK, gin.H{})
 }
