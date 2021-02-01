@@ -1,13 +1,11 @@
 package handlers
 
 import (
+	"context"
 	"github.com/chilipot/songflong/src/models"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"github.com/zmb3/spotify"
-	"io"
 	"net/http"
-	"os"
 	"strconv"
 )
 
@@ -53,66 +51,52 @@ func findSongsByTempo(api *models.ExternalAPI, tempo int) []models.SongFlongTrac
 	}
 }
 
-func _download(api *models.ExternalAPI, youtubeId string, mimeType string) {
+func getStreamURL(api *models.ExternalAPI, youtubeId string, mimeType string) string {
+	ctx := context.Background()
 	video, err := api.YouTube.GetVideo(youtubeId)
 	if err != nil {
 		panic(err)
 	}
-	var resp *http.Response
 
 	for _, tag := range Itags[mimeType] {
 		format := video.Formats.FindByItag(tag)
 		if format == nil {
 			continue
 		}
-		resp, err = api.YouTube.GetStream(video, format)
+
+		url, err := api.YouTube.GetStreamURLContext(ctx, video, format)
+
 		if err != nil {
 			panic(err)
 		}
-		break
+		return url
 	}
-
-	defer resp.Body.Close()
-	file, err := os.Create(youtubeId + "-" + mimeType + ".mp4")
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-	_, err = io.Copy(file, resp.Body)
-	if err != nil {
-		panic(err)
-	}
+	return ""
 }
 
-func downloadVideoTracks(api *models.ExternalAPI, track models.SongFlongTrack) {
-	_download(api, track.ExternalIDs["youtube"], "video")
+func getVideoLinks(api *models.ExternalAPI, track models.SongFlongTrack) string {
+	return getStreamURL(api, track.ExternalIDs["youtube"], "video")
 }
 
-func downloadAudioTracks(api *models.ExternalAPI, tracks []models.SongFlongTrack) {
+func getAudioLinks(api *models.ExternalAPI, tracks []models.SongFlongTrack) []string {
+	var streams []string
 	for _, track := range tracks {
-		_download(api, track.ExternalIDs["youtube"], "audio")
+		stream := getStreamURL(api, track.ExternalIDs["youtube"], "audio")
+		streams = append(streams, stream)
 	}
+	return streams
 }
 
-func SubmitJob(api *models.ExternalAPI, context *gin.Context) {
+func GetStreams(api *models.ExternalAPI, context *gin.Context) {
 	var track models.Track
-	err := context.ShouldBindBodyWith(&track, binding.JSON)
-	if err != nil {
-		panic(err)
-	}
-	sourceTrack := api.GetTrack(track.ID)
+	trackId := context.Query("id")
+	sourceTrack := api.GetTrack(spotify.ID(trackId))
 	sharedTracks := findSongsByTempo(api, sourceTrack.Tempo)
-	go downloadVideoTracks(api, sourceTrack)
-	go downloadAudioTracks(api, sharedTracks)
+	videoLink := getVideoLinks(api, sourceTrack)
+	audioLinks := getAudioLinks(api, sharedTracks)
 	context.JSON(http.StatusOK, gin.H{
-		"jobId":       track.ID,
-		"numOfShared": len(sharedTracks),
+		"jobId": track.ID,
+		"video": videoLink,
+		"audio": audioLinks,
 	})
-}
-
-func GetJob(api *models.ExternalAPI, context *gin.Context) {
-	jobId := context.Param("jobId")
-	sourceTrack := api.GetTrack(spotify.ID(jobId))
-	sharedTracks := findSongsByTempo(api, sourceTrack.Tempo)
-	context.JSON(http.StatusOK, gin.H{})
 }

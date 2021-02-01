@@ -18,9 +18,7 @@ func (app *App) initRoutes() *gin.Engine {
 
 	r.GET("/search", app.handleRequest(handlers.FindTracks))
 
-	r.POST("/job", app.handleRequest(handlers.SubmitJob))
-
-	r.GET("/job/:jobId", app.handleRequest(handlers.GetJob))
+	r.GET("/streams", app.handleRequest(handlers.GetStreams))
 
 	return r
 }

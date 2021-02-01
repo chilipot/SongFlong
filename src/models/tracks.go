@@ -64,7 +64,7 @@ func (api *ExternalAPI) createTrack(id spotify.ID) SongFlongTrack {
 // Adds a SongFlongTrack to the Firestore tracks collection
 func (api *ExternalAPI) saveTrack(track SongFlongTrack) {
 	ctx := context.Background()
-	trackRef := api.Firestore.Doc(fmt.Sprintf("tracks/%s", track.ID))
+	trackRef := api.Firestore.Doc(fmt.Sprintf("Tracks/%s", track.ID))
 	_, err := trackRef.Create(ctx, track)
 	if err != nil {
 		panic(err)
@@ -74,7 +74,7 @@ func (api *ExternalAPI) saveTrack(track SongFlongTrack) {
 // Gets the SongFlongTrack for the given Spotify ID
 func (api *ExternalAPI) GetTrack(id spotify.ID) SongFlongTrack {
 	ctx := context.Background()
-	trackRef := api.Firestore.Doc(fmt.Sprintf("tracks/%s", id))
+	trackRef := api.Firestore.Doc(fmt.Sprintf("Tracks/%s", id))
 	docsnap, err := trackRef.Get(ctx)
 
 	var track SongFlongTrack
