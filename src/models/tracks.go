@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/zmb3/spotify"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -72,8 +73,7 @@ func (api *ExternalAPI) saveTrack(track SongFlongTrack) {
 }
 
 // Gets the SongFlongTrack for the given Spotify ID
-func (api *ExternalAPI) GetTrack(id spotify.ID) SongFlongTrack {
-	ctx := context.Background()
+func (api *ExternalAPI) GetTrack(ctx *gin.Context, id spotify.ID) (SongFlongTrack, error) {
 	trackRef := api.Firestore.Doc(fmt.Sprintf("Tracks/%s", id))
 	docsnap, err := trackRef.Get(ctx)
 
@@ -84,19 +84,20 @@ func (api *ExternalAPI) GetTrack(id spotify.ID) SongFlongTrack {
 			track = api.createTrack(id)
 			go api.saveTrack(track)
 		} else {
-			panic(err)
+			return SongFlongTrack{}, err
 		}
 	} else {
 		if err = docsnap.DataTo(&track); err != nil {
-			panic(err)
+			return SongFlongTrack{}, err
 		}
 	}
-	return track
+	return track, nil
 }
 
-func (api *ExternalAPI) FindTrack(artist string, title string) SongFlongTrack {
+func (api *ExternalAPI) FindTrack(ctx *gin.Context, artist string, title string) SongFlongTrack {
 	trackId := api.findSpotifyTrack(artist, title).ID
-	return api.GetTrack(trackId)
+	res, _ := api.GetTrack(ctx, trackId)
+	return res
 }
 
 func (track *SongFlongTrack) GetYouTubeID() string {

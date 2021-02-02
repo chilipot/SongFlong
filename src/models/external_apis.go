@@ -58,7 +58,7 @@ func InitializeSources() ExternalAPI {
 	imvdb_api_key := os.Getenv("IMVDB_API_KEY")
 	songbpm_api_key := os.Getenv("GETSONGBPM_API_KEY")
 	spotClient := getSpotifyClient()
-	ytClient := youtube.Client{}
+	ytClient := youtube.Client{Debug: true}
 	return ExternalAPI{
 		Spotify:   &spotClient,
 		Imvdb:     resty.New().SetHostURL(IMVDB_API_HOST).SetHeader("IMVDB-APP-KEY", imvdb_api_key),

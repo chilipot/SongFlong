@@ -11,6 +11,8 @@ require (
 	github.com/kkdai/youtube/v2 v2.4.0
 	github.com/lithdew/youtube v0.0.0-20200524132213-a1fd5d688f8a
 	github.com/michiwend/gomusicbrainz v0.0.0-20181012083520-6c07e13dd396 // indirect
+	github.com/satori/go.uuid v1.2.0
+	github.com/sirupsen/logrus v1.7.0
 	github.com/zmb3/spotify v1.1.0
 	golang.org/x/oauth2 v0.0.0-20201109201403-9fd604954f58
 	google.golang.org/api v0.36.0
