@@ -17,21 +17,23 @@ type RequestHandlerFunction func(api *models.ExternalAPI, context *gin.Context)
 
 func RequestIdMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("X-Request-Id", uuid.NewV4().String())
-		c.Set("requestID", c.GetHeader("X-Request-Id"))
-		log.WithField("requestID", c.GetHeader("X-Request-Id")).Info("Handling request")
+		requestId := uuid.NewV4().String()
+		c.Writer.Header().Set("X-Request-Id", requestId)
+		c.Set("requestID", requestId)
+		log.WithField("requestID", requestId).Info("Handling request")
 		c.Next()
 	}
 }
 
+// Creates a Gin Engine instance with the app's middleware and routes
 func (app *App) initRoutes() *gin.Engine {
 	r := gin.Default()
+
+	r.Use(RequestIdMiddleware())
 
 	r.GET("/search", app.handleRequest(handlers.FindTracks))
 
 	r.GET("/streams", app.handleRequest(handlers.GetStreams))
-
-	r.Use(RequestIdMiddleware())
 
 	return r
 }

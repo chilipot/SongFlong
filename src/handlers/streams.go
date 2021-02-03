@@ -111,18 +111,26 @@ func getLinks(api *models.ExternalAPI, video models.SongFlongTrack, audio []mode
 }
 
 // Builds the SongFlongTrack from the inputted ID and find other SongFlongTracks with similar tempo.
-func getStreamsHandler(api *models.ExternalAPI, c *gin.Context) (YouTubeStreamURL, []YouTubeStreamURL, error) {
+func getStreamsHandler(api *models.ExternalAPI, c *gin.Context, trackId string) (YouTubeStreamURL, []YouTubeStreamURL, error) {
 	var err error
-	trackId := c.GetString("trackID")
+	contextLogger := log.WithFields(map[string]interface{}{
+		"requestID": c.Value("requestID"),
+		"trackID":   trackId,
+	})
 
 	sourceTrack, err := api.GetTrack(c, spotify.ID(trackId))
 	if err != nil {
 		return "", nil, err
 	}
+	contextLogger.Info("found source track")
+
 	sharedTracks, err := findSongsByTempo(c, api, sourceTrack.Tempo)
 	if err != nil {
 		return "", nil, err
 	}
+	contextLogger.Info("found shared tracks")
+
+	contextLogger.Info("fetching the stream urls")
 	return getLinks(api, sourceTrack, sharedTracks)
 }
 
@@ -130,12 +138,12 @@ func getStreamsHandler(api *models.ExternalAPI, c *gin.Context) (YouTubeStreamUR
 // Will abort if any errors occur
 func GetStreams(api *models.ExternalAPI, c *gin.Context) {
 	contextLogger := log.WithField("requestID", c.Value("requestID"))
-	contextLogger.Info("retrieving streams")
 
 	trackId := c.Query("id")
-	c.Set("trackID", trackId)
 
-	videoLink, audioLinks, err := getStreamsHandler(api, c)
+	contextLogger.WithField("trackID", trackId).Info("retrieving streams")
+
+	videoLink, audioLinks, err := getStreamsHandler(api, c, trackId)
 
 	if err != nil {
 		contextLogger.Error("failed to retrieve streams")
