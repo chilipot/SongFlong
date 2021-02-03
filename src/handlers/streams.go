@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"github.com/chilipot/songflong/src/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -57,57 +56,68 @@ func findSongsByTempo(ctx *gin.Context, api *models.ExternalAPI, tempo int) ([]m
 }
 
 // Generic asynchronous handler for fetching the YouTube Stream URL
-func getStreamURL(ch chan YouTubeStreamURL, wg *sync.WaitGroup, api *models.ExternalAPI, youtubeId string, mimeType string) {
-	ctx := context.Background()
+func getStreamURL(c *gin.Context, api *models.ExternalAPI, youtubeId string, mimeType string) YouTubeStreamURL {
+	contextLogger := log.WithFields(map[string]interface{}{"requestID": c.Value("requestID"), "youtubeID": youtubeId, "mimeType": mimeType})
+	var streamUrl YouTubeStreamURL
 	video, err := api.YouTube.GetVideo(youtubeId)
 	if err != nil {
-		wg.Done()
-		return
+		contextLogger.Error(err)
+		return streamUrl
 	}
+	contextLogger.Debug("found youtube video metadata")
 
-	for tag := range Itags[mimeType] {
+	for _, tag := range Itags[mimeType] {
 		format := video.Formats.FindByItag(tag)
 		if format == nil {
 			continue
 		}
 
-		url, err := api.YouTube.GetStreamURLContext(ctx, video, format)
+		url, err := api.YouTube.GetStreamURLContext(c, video, format)
 
 		if err != nil {
-			wg.Done()
-			return
+			contextLogger.Error(err)
+			break
 		}
-		ch <- YouTubeStreamURL(url)
+		contextLogger.Debug("retrieved the stream url")
+		streamUrl = YouTubeStreamURL(url)
 		break
 	}
-	wg.Done()
+	contextLogger.Debug("failed to find a stream url")
+	return streamUrl
 }
 
 // Asynchronously finds the YouTube Stream URLs for both the video and the multiple audio tracks
-func getLinks(api *models.ExternalAPI, video models.SongFlongTrack, audio []models.SongFlongTrack) (YouTubeStreamURL, []YouTubeStreamURL, error) {
+func getLinks(c *gin.Context, api *models.ExternalAPI, video models.SongFlongTrack, audio []models.SongFlongTrack) (YouTubeStreamURL, []YouTubeStreamURL, error) {
+	contextLogger := log.WithField("requestID", c.Value("requestID"))
 	var wg sync.WaitGroup
-	videoChan := make(chan YouTubeStreamURL)
-	audioChan := make(chan YouTubeStreamURL)
+	var videoLink YouTubeStreamURL
+	var audioLinks []YouTubeStreamURL
+
+	contextLogger.Debug("spawning the goroutines to retrieve the urls")
 
 	wg.Add(1)
-	go getStreamURL(videoChan, &wg, api, video.GetYouTubeID(), "video")
-	for _, track := range audio {
-		wg.Add(1)
-		go getStreamURL(audioChan, &wg, api, track.GetYouTubeID(), "audio")
-	}
-
 	go func() {
-		wg.Wait()
-		close(videoChan)
-		close(audioChan)
+		defer wg.Done()
+		link := getStreamURL(c, api, video.GetYouTubeID(), "video")
+		videoLink = link
 	}()
 
-	var audioLinks []YouTubeStreamURL
-	for val := range audioChan {
-		audioLinks = append(audioLinks, val)
+	for _, track := range audio {
+		wg.Add(1)
+		go func(track models.SongFlongTrack) {
+			defer wg.Done()
+			link := getStreamURL(c, api, track.GetYouTubeID(), "audio")
+			if link != "" {
+				audioLinks = append(audioLinks, link)
+			}
+		}(track)
 	}
 
-	return <-videoChan, audioLinks, nil
+	contextLogger.Debug("waiting for goroutines to finish")
+	wg.Wait()
+	contextLogger.Debug("finished retrieving urls; formatting response")
+
+	return videoLink, audioLinks, nil
 }
 
 // Builds the SongFlongTrack from the inputted ID and find other SongFlongTracks with similar tempo.
@@ -131,7 +141,7 @@ func getStreamsHandler(api *models.ExternalAPI, c *gin.Context, trackId string) 
 	contextLogger.Info("found shared tracks")
 
 	contextLogger.Info("fetching the stream urls")
-	return getLinks(api, sourceTrack, sharedTracks)
+	return getLinks(c, api, sourceTrack, sharedTracks)
 }
 
 // Handles HTTP requests for Streams and responds with the proper links in JSON format.

@@ -42,6 +42,7 @@ func (app *App) Initialize() {
 	app.Router = app.initRoutes()
 	sources := models.InitializeSources()
 	app.Sources = &sources
+	log.SetLevel(log.DebugLevel)
 	log.Debug("App successfully initialized")
 }
 
