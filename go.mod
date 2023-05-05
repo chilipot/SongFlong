@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	cloud.google.com/go/firestore v1.4.0
-	github.com/gin-gonic/gin v1.6.3
+	github.com/gin-gonic/gin v1.9.0
 	github.com/go-resty/resty/v2 v2.4.0
 	github.com/kkdai/youtube/v2 v2.4.0
 	github.com/satori/go.uuid v1.2.0
